@@ -1,0 +1,2 @@
+INSERT INTO users (id, email, first_name, last_name, password, profile_image_url, role, verified) VALUES (0,'
+helpingPetsSupport@gmail.com','System','System',"bGV0bWVpbg==","https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTPZ8oGaPaJdYYhVnbgeeWIg5B4kMgsQSdOOQ&s", 'ADMIN',1)
