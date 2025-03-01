@@ -16,11 +16,11 @@ public class EmailUtils {
         + getResetPasswordUrl(host, token) + "\n\n" + "The Helping Pets Team Support!";
   }
 
-  private static String getVerificationAccountUrl(String host, String token) {
+  public String getVerificationAccountUrl(String host, String token) {
     return host + "/user/verify/account?token=" + token;
   }
 
-  private static String getResetPasswordUrl(String host, String token) {
+  public String getResetPasswordUrl(String host, String token) {
     return host + "/user/verify/password?token=" + token;
   }
 

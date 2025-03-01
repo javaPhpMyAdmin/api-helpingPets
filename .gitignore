@@ -21,8 +21,15 @@ target/
 *.ipr
 
 .env
-.env-dev
-.env-prod
+.env.dev
+.env.prod
+
+start-dev.sh
+start-prod.sh
+
+docker-compose.dev.yml
+docker-compose.prod.yml
+
 
 ### NetBeans ###
 /nbproject/private/

@@ -1,17 +1,29 @@
-version: '3'
-
 services:
-  app_helping_pets:
-    env_file:
-      - .env
-    build: .
+  app_helping_pets_dev:
+    # env_file: 
+    #   - .env.dev
+    env_file: 
+      - ${ENV_FILE}
+    build: 
+      context: . 
+      dockerfile: ${DOCKER_FILE}
+      # dockerfile: Dockerfile.dev
+    volumes:
+      # - .env.dev:/app/.env.dev
+      - .:/app  # Mapea el código fuente dentro del contenedor
+      - ./target:/target  # Mapea la carpeta de compilación
+      - ~/.m2:/root/.m2 # Cache de Maven para evitar descargas
+    working_dir: /app
     ports:
       - "8082:8080"
     environment:
+      ACTIVE_PROFILE: dev
+      SPRING_DEVTOOLS_RESTART_ENABLED: "true"
+      SPRING_DEVTOOLS_LIVERELOAD_ENABLED: "true"
       DATABASE_URL: jdbc:mysql://helping_pets_db:${DATABASE_PORT}/${DATABASE_NAME}?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&useSSL=FALSE
       DATABASE_USERNAME: ${DATABASE_USERNAME}
       DATABASE_PASSWORD: ${DATABASE_PASSWORD}
-    restart: always
+    restart: on-failure 
     depends_on:
       helping_pets_db:
         condition: service_healthy
@@ -22,9 +34,11 @@ services:
     environment:
       MYSQL_DATABASE: ${DATABASE_NAME}
       MYSQL_PASSWORD: ${DATABASE_PASSWORD}
-      MYSQL_ROOT_PASSWORD: ${DATABASE_PASSWORD}
+      MYSQL_USER: ${DATABASE_USERNAME}
+      MYSQL_ROOT_PASSWORD: ${DATABASE_ROOT_PASSWORD}
     restart: always
     healthcheck:
-      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
-      timeout: 10s
-      retries: 10
+       test: ["CMD", "mysqladmin", "ping", "-h", "helping_pets_db"]
+       interval: 10s
+       timeout: 5s
+       retries: 5

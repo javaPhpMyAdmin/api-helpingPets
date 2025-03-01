@@ -1,0 +1,18 @@
+FROM maven:3.8.5-eclipse-temurin-17
+WORKDIR /app
+
+# # Copia el archivo de variables de entorno (Opcional, ya que Docker Compose las inyecta)
+# COPY .env /app/.env
+
+# Copia solo el pom.xml primero para cachear dependencias
+COPY pom.xml .
+RUN mvn dependency:go-offline
+
+# Copia el código fuente
+COPY . .
+
+# Expone el puerto del debugger de Java
+EXPOSE 8080 5005
+
+# Arranca la app en modo desarrollo con Maven
+CMD ["mvn", "spring-boot:run"]

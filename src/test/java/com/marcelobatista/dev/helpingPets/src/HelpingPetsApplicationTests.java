@@ -3,7 +3,6 @@ package com.marcelobatista.dev.helpingPets.src;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
 
 import io.github.cdimascio.dotenv.Dotenv;
 
@@ -12,7 +11,10 @@ class HelpingPetsApplicationTests {
   @BeforeAll
   public static void setup() {
     // Cargar las variables de entorno para los tests
-    Dotenv dotenv = Dotenv.load();
+    Dotenv dotenv = Dotenv.configure()
+        .filename(".env.dev")
+        .ignoreIfMissing() // No falla si no encuentra el archivo .env
+        .load();
   }
 
   @Test

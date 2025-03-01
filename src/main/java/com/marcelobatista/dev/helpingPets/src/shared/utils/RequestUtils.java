@@ -4,10 +4,11 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+
+import com.marcelobatista.dev.helpingPets.src.shared.Response.GlobalResponse;
+
 import static java.time.LocalDateTime.now;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
-
-import com.marcelobatista.dev.helpingPets.src.domain.GlobalResponse;
 
 import jakarta.servlet.http.HttpServletRequest;
 
