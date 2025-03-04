@@ -11,6 +11,10 @@ import com.marcelobatista.dev.helpingPets.src.modules.users.dto.UserResponse;
 import com.marcelobatista.dev.helpingPets.src.shared.Response.GlobalResponse;
 import com.marcelobatista.dev.helpingPets.src.shared.utils.RequestUtils;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.websocket.server.PathParam;
@@ -18,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
@@ -30,12 +35,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 @RestController
 @RequestMapping("/user")
 @RequiredArgsConstructor
+@Tag(name = "Users", description = "Users managment")
 @Slf4j
 public class UserController {
 
   private final UserService userService;
   private final RequestUtils requestUtils;
 
+  @Operation(summary = "Create an user for the application", description = "Add an user to the database")
   @PostMapping("/create-user")
   public ResponseEntity<GlobalResponse> createUser(@Valid @RequestBody CreateUserRequestDto userRequest,
       HttpServletRequest request) {
@@ -45,6 +52,10 @@ public class UserController {
   }
 
   // create update user endpoint
+  @SecurityRequirements({
+      @SecurityRequirement(name = "oauth2"),
+      @SecurityRequirement(name = "cookieAuth")
+  })
   @PutMapping("/update-user/{id}")
   public ResponseEntity<GlobalResponse> updateUser(@Valid @RequestBody UpdateUserRequestDto userRequest,
       HttpServletRequest request) {
@@ -60,6 +71,14 @@ public class UserController {
     return ResponseEntity.created(getUri())
         .body(requestUtils.getResponse(request, Map.of("userAccountVerified", "ACCOUNT_VERIFIED_SUCCESFULLY"),
             "The account was correctly verified", HttpStatus.OK));
+  }
+
+  @GetMapping("/get-all")
+  public ResponseEntity<GlobalResponse> getUsers(@PathParam("token") String token, HttpServletRequest request) {
+    List<UserResponse> usersRetrieved = userService.getUsers();
+    return ResponseEntity.created(getUri())
+        .body(requestUtils.getResponse(request, Map.of("users", usersRetrieved),
+            "Users in BD", HttpStatus.OK));
   }
 
   private URI getUri() {

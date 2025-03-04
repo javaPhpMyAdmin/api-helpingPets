@@ -10,9 +10,18 @@ public class SecurityEndpoints {
   public static final List<String> PUBLIC_ENDPOINTS = List.of(
       "/auth/**",
       "/user/create-user",
+      "/user/get-all",
       "/user/verify/**",
       "/pets/public/**",
-      "/reports/public/**");
+      "/reports/public/**",
+      "/swagger-ui/**",
+      "/swagger-ui.html",
+      "/v3/api-docs/**",
+      "/api/v1/v3/api-docs/**",
+      "/api/v1/swagger-ui/**",
+      // TODO: ONLY FOR TEST
+      "/chats/**",
+      "/messages/**");
 
   public static final Map<HttpMethod, List<String>> USER_PROTECTED_ENDPOINTS = Map.of(HttpMethod.PUT, List.of(
       "/user/update-user"),

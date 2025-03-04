@@ -1,7 +1,8 @@
 package com.marcelobatista.dev.helpingPets.src.modules.users.application.service.impl;
 
+import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -74,6 +75,14 @@ public class UserServiceImpl implements UserService {
     user.setVerified(true);
     userRepository.save(user);
     verificationCodeRepository.delete(verificationCode);
+  }
+
+  @Override
+  @Transactional
+  public List<UserResponse> getUsers() {
+    List<User> users = userRepository.findAll();
+    return users.stream().map(user -> new UserResponse(user)).collect(Collectors.toList());
+
   }
 
 }

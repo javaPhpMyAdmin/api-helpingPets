@@ -47,8 +47,10 @@ public class SecurityConfiguration {
             authorize -> {
               authorize.requestMatchers(SecurityEndpoints.PUBLIC_ENDPOINTS.toArray(new String[0])).permitAll();
 
-              applyMethodBasedAuthorization(authorize, SecurityEndpoints.USER_PROTECTED_ENDPOINTS, "USER");
-              applyMethodBasedAuthorization(authorize, SecurityEndpoints.ADMIN_PROTECTED_ENDPOINTS, "ADMIN");
+              applyMethodBasedAuthorization(authorize,
+                  SecurityEndpoints.USER_PROTECTED_ENDPOINTS, "USER");
+              applyMethodBasedAuthorization(authorize,
+                  SecurityEndpoints.ADMIN_PROTECTED_ENDPOINTS, "ADMIN");
               authorize.anyRequest().authenticated();
             });
     httpSecurity.sessionManagement(

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.marcelobatista.dev.helpingPets.src.security.application.service.AuthService;
 import com.marcelobatista.dev.helpingPets.src.security.dto.LoginRequestDTO;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
+@Tag(name = "Authentication", description = "Authentication managment")
 @Slf4j
 public class AuthController {
 
