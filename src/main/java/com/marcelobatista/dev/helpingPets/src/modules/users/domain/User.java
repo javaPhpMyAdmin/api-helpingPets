@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -93,10 +94,10 @@ public class User implements UserDetails {
     connectedAccounts.add(connectedAccount);
   }
 
-  public void update(UpdateUserRequestDto request) {
-    // TODO: EXTEND THIS METHOD TO UPDATE OTHER FIELDS
-    this.firstName = request.getFirstName();
-    this.lastName = request.getLastName();
+  public void updateFromDto(UpdateUserRequestDto userRequestDto) {
+    Optional.ofNullable(userRequestDto.getFirstName()).ifPresent(firstName -> this.firstName = firstName);
+    Optional.ofNullable(userRequestDto.getLastName()).ifPresent(lastName -> this.lastName = lastName);
+    Optional.ofNullable(userRequestDto.getProfileImageUrl()).ifPresent(imageUrl -> this.profileImageUrl = imageUrl);
   }
 
   public void updatePassword(String newPassword) {

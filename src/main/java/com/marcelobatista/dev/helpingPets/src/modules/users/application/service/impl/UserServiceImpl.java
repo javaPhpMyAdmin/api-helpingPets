@@ -2,9 +2,11 @@ package com.marcelobatista.dev.helpingPets.src.modules.users.application.service
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.marcelobatista.dev.helpingPets.src.events.domain.UserEvent;
@@ -57,13 +59,16 @@ public class UserServiceImpl implements UserService {
 
   @Transactional
   @Override
-  public UserResponse updateUser(@Valid UpdateUserRequestDto userRequest) {
-    User user = SecurityUtil.getAuthenticatedUser();
-    log.info("User: {}", user);
-    user = userRepository.getReferenceById(user.getId());
-    user.update(userRequest);
-    user = userRepository.save(user);
-    return new UserResponse(user);
+  public UserResponse updateUser(@Valid UpdateUserRequestDto userRequestDto) {
+    User currentUser = Optional.ofNullable(SecurityUtil.getAuthenticatedUser())
+        .orElseThrow(() -> ApiException.builder()
+            .status(HttpStatus.UNAUTHORIZED.value())
+            .message("User must be authenticated")
+            .build());
+
+    currentUser.updateFromDto(userRequestDto);
+
+    return new UserResponse(currentUser);
   }
 
   @Override

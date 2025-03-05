@@ -1,12 +1,15 @@
 package com.marcelobatista.dev.helpingPets.src.modules.pets.domain;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
+import com.marcelobatista.dev.helpingPets.src.modules.pets.dto.PetUpdateDTO;
 import com.marcelobatista.dev.helpingPets.src.modules.users.domain.User;
 import com.marcelobatista.dev.helpingPets.src.shared.enums.PetStatus;
+import com.marcelobatista.dev.helpingPets.src.shared.exceptions.ApiException;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -16,6 +19,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,9 +39,13 @@ public class PetEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
+  @Setter
   private String name;
+  @Setter
   private String breed;
+  @Setter
   private String description;
+  @Setter
   private String imageUrl;
 
   @Enumerated(EnumType.STRING)
@@ -48,16 +57,45 @@ public class PetEntity {
   private User owner;
 
   @CreatedDate
+  @Setter
   private LocalDateTime createdAt;
   @LastModifiedDate
+  @Setter
   private LocalDateTime updatedAt;
 
   public void assignOwner(User owner) {
-    if (this.owner == null) { // Solo permitir asignación una vez
-      this.owner = owner;
-    } else {
-      throw new IllegalStateException("Owner cannot be changed once set");
-    }
+    Optional.ofNullable(this.owner)
+        .ifPresent(o -> {
+          throw ApiException.builder().message("Owner cannot be changed once set").build();
+        });
+
+    this.owner = owner;
+  }
+
+  @PrePersist
+  protected void onCreate() {
+    this.createdAt = LocalDateTime.now();
+    this.updatedAt = LocalDateTime.now();
+  }
+
+  @PreUpdate
+  protected void onUpdate() {
+    this.updatedAt = LocalDateTime.now();
+  }
+
+  public void updateFromDto(PetUpdateDTO petUpdateDTO) {
+    Optional.ofNullable(petUpdateDTO.getName()).ifPresent(this::setName);
+    Optional.ofNullable(petUpdateDTO.getBreed()).ifPresent(this::setBreed);
+    Optional.ofNullable(petUpdateDTO.getDescription()).ifPresent(this::setDescription);
+    Optional.ofNullable(petUpdateDTO.getImageUrl()).ifPresent(this::setImageUrl);
+
+    Optional.ofNullable(petUpdateDTO.getStatus()).ifPresent(status -> {
+      try {
+        this.setPetStatus(PetStatus.valueOf(status.toUpperCase()));
+      } catch (IllegalArgumentException e) {
+        throw ApiException.builder().message(("Invalid status value: " + status)).build();
+      }
+    });
   }
 
 }

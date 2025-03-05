@@ -6,6 +6,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 import com.marcelobatista.dev.helpingPets.src.modules.pets.domain.PetEntity;
+import com.marcelobatista.dev.helpingPets.src.modules.pets.dto.PetCreateDTO;
 import com.marcelobatista.dev.helpingPets.src.modules.pets.dto.PetDTO;
 
 @Mapper(componentModel = "spring")
@@ -16,9 +17,10 @@ public interface PetMapper {
 
   @Mapping(target = "owner", ignore = true)
   @Mapping(source = "status", target = "petStatus")
-  @Mapping(source = "createdAt", target = "createdAt")
+  @Mapping(target = "createdAt", ignore = true)
+  @Mapping(target = "id", ignore = true)
   @Mapping(target = "updatedAt", ignore = true)
-  PetEntity toEntity(PetDTO petDTO);
+  PetEntity toEntity(PetCreateDTO petCreateDTO);
 
   List<PetDTO> toDtoList(List<PetEntity> petList);
 }
