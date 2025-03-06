@@ -21,6 +21,7 @@ target/
 *.ipr
 
 .env
+.env.bak
 .env.dev
 .env.prod
 

@@ -45,7 +45,7 @@ public class SecurityConfiguration {
     httpSecurity.csrf(csrf -> csrf.disable())
         .authorizeHttpRequests(
             authorize -> {
-              authorize.requestMatchers(SecurityEndpoints.PUBLIC_ENDPOINTS.toArray(new String[0])).permitAll();
+              authorize.requestMatchers(SecurityEndpoints.PUBLIC_ENDPOINTS.toArray(String[]::new)).permitAll();
 
               applyMethodBasedAuthorization(authorize,
                   SecurityEndpoints.USER_PROTECTED_ENDPOINTS, "USER");
@@ -72,7 +72,7 @@ public class SecurityConfiguration {
       AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry auth,
       Map<HttpMethod, List<String>> endpoints,
       String role) {
-    endpoints.forEach((method, urls) -> auth.requestMatchers(method, urls.toArray(new String[0])).hasRole(role));
+    endpoints.forEach((method, urls) -> auth.requestMatchers(method, urls.toArray(String[]::new)).hasRole(role));
   }
 
   public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {

@@ -2,8 +2,6 @@ package com.marcelobatista.dev.helpingPets.src.modules.reports.domain;
 
 import java.time.LocalDateTime;
 
-import org.springframework.cglib.core.Local;
-
 import com.marcelobatista.dev.helpingPets.src.modules.users.domain.User;
 import com.marcelobatista.dev.helpingPets.src.shared.enums.ReportStatus;
 

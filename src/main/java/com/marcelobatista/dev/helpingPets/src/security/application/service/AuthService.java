@@ -9,7 +9,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Service;
 
-import com.marcelobatista.dev.helpingPets.src.modules.users.infrastructure.UserRepository;
 import com.marcelobatista.dev.helpingPets.src.security.dto.LoginRequestDTO;
 
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
