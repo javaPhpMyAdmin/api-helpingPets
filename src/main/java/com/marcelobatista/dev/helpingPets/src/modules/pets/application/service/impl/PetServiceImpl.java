@@ -46,7 +46,7 @@ public class PetServiceImpl implements PetService {
     PetEntity savedPet = Optional.of(petRepository.save(pet))
         .orElseThrow(() -> ApiException.builder().status(500).message("Failed to save pet").build());
 
-    return petMapper.toDto(petRepository.save(savedPet));
+    return petMapper.toDto(savedPet);
   }
 
   @Override

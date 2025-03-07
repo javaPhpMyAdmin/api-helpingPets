@@ -1,4 +1,4 @@
-package com.marcelobatista.dev.helpingPets.src.modules.reports.dto;
+package com.marcelobatista.dev.helpingPets.src.modules.reports.dto.LostPetReportDTOs;
 
 import java.time.LocalDateTime;
 
@@ -20,6 +20,9 @@ public class LostPetReportDTO {
   private String petName;
   private String breed;
   private String description;
+  private String imageUrl;
   private LocalDateTime reportedAt;
   private ReportStatus status;
+  private String contactEmail;
+  private Long reporterId;
 }

@@ -5,7 +5,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.marcelobatista.dev.helpingPets.src.modules.reports.application.service.FoundPetReportService;
-import com.marcelobatista.dev.helpingPets.src.modules.reports.dto.FoundPetReportDTO;
+import com.marcelobatista.dev.helpingPets.src.modules.reports.dto.FoundPetReportDTOs.FoundPetReportDTO;
+import com.marcelobatista.dev.helpingPets.src.modules.reports.dto.FoundPetReportDTOs.UpdateFoundPetReportDTO;
 import com.marcelobatista.dev.helpingPets.src.modules.reports.infrastructure.FoundPetRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -32,7 +33,7 @@ public class FoundPetReportServiceImpl implements FoundPetReportService {
   }
 
   @Override
-  public FoundPetReportDTO updateReport(FoundPetReportDTO FoundPetReportDTO) {
+  public FoundPetReportDTO updateReport(UpdateFoundPetReportDTO updateFoundPetReportDTO) {
     throw new UnsupportedOperationException("Unimplemented method 'updateReport'");
   }
 

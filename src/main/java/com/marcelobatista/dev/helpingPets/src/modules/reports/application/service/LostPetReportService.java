@@ -2,16 +2,18 @@ package com.marcelobatista.dev.helpingPets.src.modules.reports.application.servi
 
 import java.util.List;
 
-import com.marcelobatista.dev.helpingPets.src.modules.reports.dto.LostPetReportDTO;
+import com.marcelobatista.dev.helpingPets.src.modules.reports.dto.LostPetReportDTOs.CreateLostPetReportDTO;
+import com.marcelobatista.dev.helpingPets.src.modules.reports.dto.LostPetReportDTOs.LostPetReportDTO;
+import com.marcelobatista.dev.helpingPets.src.modules.reports.dto.LostPetReportDTOs.UpdateLostPetReportDTO;
 
 public interface LostPetReportService {
-  LostPetReportDTO createReport(LostPetReportDTO lostPetReportDTO);
+  LostPetReportDTO createReport(CreateLostPetReportDTO createLostPetReportDTO);
 
   List<LostPetReportDTO> getAllReports();
 
   LostPetReportDTO getReportById(Long lostPetId);
 
-  LostPetReportDTO updateReport(LostPetReportDTO lostPetReportDTO);
+  LostPetReportDTO updateReport(UpdateLostPetReportDTO updateLostPetReportDTO);
 
   void deleteReport(Long lostPetId);
 }
