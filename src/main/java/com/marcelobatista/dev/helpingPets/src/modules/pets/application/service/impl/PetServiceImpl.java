@@ -38,7 +38,7 @@ public class PetServiceImpl implements PetService {
     PetEntity pet = petMapper.toEntity(petCreateDTO);
 
     User owner = Optional.ofNullable(SecurityUtil.getAuthenticatedUser())
-        .orElseThrow(() -> ApiException.builder().status(401).message("Unauthorized: User not authenticated").build());
+        .orElseThrow(() -> ApiException.builder().status(401).message("unauthorized: user not authenticated").build());
 
     pet.assignOwner(owner);
     pet.setPetStatus(PetStatus.AVAILABLE);

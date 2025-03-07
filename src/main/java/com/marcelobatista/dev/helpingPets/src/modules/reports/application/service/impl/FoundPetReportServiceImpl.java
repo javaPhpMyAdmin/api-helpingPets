@@ -6,13 +6,19 @@ import org.springframework.stereotype.Service;
 
 import com.marcelobatista.dev.helpingPets.src.modules.reports.application.service.FoundPetReportService;
 import com.marcelobatista.dev.helpingPets.src.modules.reports.dto.FoundPetReportDTO;
+import com.marcelobatista.dev.helpingPets.src.modules.reports.infrastructure.FoundPetRepository;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class FoundPetReportServiceImpl implements FoundPetReportService {
+  private final FoundPetRepository foundPetRepository;
 
   @Override
   public FoundPetReportDTO createReport(FoundPetReportDTO foundPetReportDTO) {
-    throw new UnsupportedOperationException("Unimplemented method 'createReport'");
+    throw new UnsupportedOperationException("");
+
   }
 
   @Override

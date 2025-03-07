@@ -2,6 +2,8 @@ package com.marcelobatista.dev.helpingPets.src.modules.reports.domain;
 
 import java.time.LocalDateTime;
 
+import org.springframework.security.access.prepost.PreAuthorize;
+
 import com.marcelobatista.dev.helpingPets.src.modules.pets.domain.PetEntity;
 import com.marcelobatista.dev.helpingPets.src.modules.users.domain.User;
 import com.marcelobatista.dev.helpingPets.src.shared.enums.ReportStatus;
@@ -14,10 +16,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
@@ -35,6 +39,7 @@ public class LostPetReport {
 
   @ManyToOne
   @JoinColumn(name = "reporter_id", nullable = false)
+  @Setter
   private User reporter;
 
   private String petName;
@@ -44,7 +49,13 @@ public class LostPetReport {
   private String contactEmail;
 
   @Enumerated(EnumType.STRING)
+  @Setter
   private ReportStatus status = ReportStatus.OPEN;
   private LocalDateTime createdAt = LocalDateTime.now();
+
+  @PrePersist
+  private void onCreate() {
+    this.createdAt = LocalDateTime.now();
+  }
 
 }
