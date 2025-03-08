@@ -5,11 +5,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
+import org.springframework.messaging.handler.annotation.support.MethodArgumentTypeMismatchException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.validation.FieldError;
@@ -74,13 +77,21 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
     return new ResponseEntity<HttpErrorResponse>(response, HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
-  // @org.springframework.web.bind.annotation.ExceptionHandler(IllegalArgumentException.class)
-  // public ResponseEntity<HttpErrorResponse>
-  // handleException(IllegalArgumentException e) {
-  // log.error("Handling IllegalArgumentException: {}", e);
-  // var response = HttpErrorResponse.of(e.getMessage(), 400, null, null);
-  // return new ResponseEntity<HttpErrorResponse>(response,
-  // HttpStatus.INTERNAL_SERVER_ERROR);
-  // }
+  @org.springframework.web.bind.annotation.ExceptionHandler(IllegalArgumentException.class)
+  public ResponseEntity<HttpErrorResponse> handleException(IllegalArgumentException e) {
+    log.error("Handling IllegalArgumentException: {}", e);
+    var response = HttpErrorResponse.of(e.getMessage(), 400, null, null);
+    return new ResponseEntity<HttpErrorResponse>(response,
+        HttpStatus.INTERNAL_SERVER_ERROR);
+  }
+
+  @org.springframework.web.bind.annotation.ExceptionHandler(BadRequestException.class)
+  public ResponseEntity<?> handleTypeMismatchException(MethodArgumentTypeMismatchException ex) {
+    // Obtener el nombre del parámetro que causó el error
+    String parameterName = ex.getCause().toString(); // Puede ser nulo o vacio dependiendo de la situación.
+    String message = "Argument type mismatch: " + ex.getMessage();
+
+    return ResponseEntity.badRequest().body(parameterName.toString());
+  }
 
 }

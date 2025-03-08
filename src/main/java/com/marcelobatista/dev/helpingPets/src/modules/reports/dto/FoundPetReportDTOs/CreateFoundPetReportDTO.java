@@ -1,6 +1,8 @@
 package com.marcelobatista.dev.helpingPets.src.modules.reports.dto.FoundPetReportDTOs;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,12 +22,13 @@ public class CreateFoundPetReportDTO {
   private String imageUrl;
 
   @NotBlank(message = "Description is required")
+  @Size(max = 500, message = "Description cannot be longer than 500 characters")
   private String description;
 
-  @NotBlank(message = "Latitude is required")
+  @NotNull(message = "Latitude is required")
   private Double latitude;
 
-  @NotBlank(message = "Latitude is required")
+  @NotNull(message = "Latitude is required")
   private Double longitude;
 
   @NotBlank(message = "Status is required")

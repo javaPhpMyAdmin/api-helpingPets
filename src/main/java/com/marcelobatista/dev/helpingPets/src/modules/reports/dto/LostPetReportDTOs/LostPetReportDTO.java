@@ -17,12 +17,13 @@ import lombok.Setter;
 @Builder
 public class LostPetReportDTO {
   private Long id;
+  private Long reporterId;
+  private String imageUrl;
+  private String description;
+  private String contactEmail;
   private String petName;
   private String breed;
-  private String description;
-  private String imageUrl;
-  private LocalDateTime reportedAt;
   private ReportStatus status;
-  private String contactEmail;
-  private Long reporterId;
+  private LocalDateTime reportedAt;
+  private LocalDateTime updatedAt;
 }

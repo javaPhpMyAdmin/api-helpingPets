@@ -40,6 +40,7 @@ public class FoundPetReport {
 
   @ManyToOne
   @JoinColumn(name = "reporter_id", nullable = false)
+  @Setter
   private User reporter;
 
   @Setter

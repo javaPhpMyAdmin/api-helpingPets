@@ -2,11 +2,12 @@ package com.marcelobatista.dev.helpingPets.src.modules.reports.application.servi
 
 import java.util.List;
 
+import com.marcelobatista.dev.helpingPets.src.modules.reports.dto.FoundPetReportDTOs.CreateFoundPetReportDTO;
 import com.marcelobatista.dev.helpingPets.src.modules.reports.dto.FoundPetReportDTOs.FoundPetReportDTO;
 import com.marcelobatista.dev.helpingPets.src.modules.reports.dto.FoundPetReportDTOs.UpdateFoundPetReportDTO;
 
 public interface FoundPetReportService {
-  FoundPetReportDTO createReport(FoundPetReportDTO foundPetReportDTO);
+  FoundPetReportDTO createReport(CreateFoundPetReportDTO createFoundPetReportDTO);
 
   List<FoundPetReportDTO> getAllReports();
 

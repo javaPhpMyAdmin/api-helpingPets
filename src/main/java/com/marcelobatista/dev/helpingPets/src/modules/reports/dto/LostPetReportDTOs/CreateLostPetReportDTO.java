@@ -1,6 +1,7 @@
 package com.marcelobatista.dev.helpingPets.src.modules.reports.dto.LostPetReportDTOs;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,6 +21,7 @@ public class CreateLostPetReportDTO {
   private String breed;
 
   @NotBlank(message = "Description cannot be empty")
+  @Size(max = 500, message = "Description cannot be longer than 500 characters")
   private String description;
 
   @NotBlank(message = "Image cannot be empty")

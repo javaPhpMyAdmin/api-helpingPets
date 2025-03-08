@@ -15,10 +15,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.marcelobatista.dev.helpingPets.src.modules.reports.application.service.FoundPetReportService;
 import com.marcelobatista.dev.helpingPets.src.modules.reports.application.service.LostPetReportService;
-import com.marcelobatista.dev.helpingPets.src.modules.reports.dto.FoundPetReportDTOs.FoundPetReportDTO;
+import com.marcelobatista.dev.helpingPets.src.modules.reports.dto.FoundPetReportDTOs.CreateFoundPetReportDTO;
 import com.marcelobatista.dev.helpingPets.src.modules.reports.dto.FoundPetReportDTOs.UpdateFoundPetReportDTO;
 import com.marcelobatista.dev.helpingPets.src.modules.reports.dto.LostPetReportDTOs.CreateLostPetReportDTO;
 import com.marcelobatista.dev.helpingPets.src.modules.reports.dto.LostPetReportDTOs.UpdateLostPetReportDTO;
+import com.marcelobatista.dev.helpingPets.src.shared.Response.GlobalResponse;
 import com.marcelobatista.dev.helpingPets.src.shared.utils.RequestUtils;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -72,7 +73,8 @@ public class ReportController {
   }
 
   @PostMapping("/lost-pet")
-  public ResponseEntity<?> createLostPetReport(@RequestBody @Valid CreateLostPetReportDTO createLostPetReportDTO,
+  public ResponseEntity<GlobalResponse> createLostPetReport(
+      @RequestBody @Valid CreateLostPetReportDTO createLostPetReportDTO,
       HttpServletRequest request) {
     return ResponseEntity.ok()
         .body(requestUtils.getResponse(request, Map.of("Result", lostPetService.createReport(createLostPetReportDTO)),
@@ -80,10 +82,12 @@ public class ReportController {
   }
 
   @PostMapping("/found-pet")
-  public ResponseEntity<?> createFoundPetReport(@RequestBody @Valid FoundPetReportDTO foundPetReportDTO,
+  public ResponseEntity<?> createFoundPetReport(
+      @RequestBody @Valid CreateFoundPetReportDTO createFoundPetReportDTO,
       HttpServletRequest request) {
     return ResponseEntity.ok()
-        .body(requestUtils.getResponse(request, Map.of("Result", foundPetService.createReport(foundPetReportDTO)),
+        .body(requestUtils.getResponse(request, Map.of("Result",
+            foundPetService.createReport(createFoundPetReportDTO)),
             "New Report Added", HttpStatus.CREATED));
   }
 

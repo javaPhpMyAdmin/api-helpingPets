@@ -28,7 +28,7 @@ public class SecurityEndpoints {
       HttpMethod.GET, List.of("/user/me/**",
           "/adoptions/**"),
       HttpMethod.POST, List.of(
-          "/reports"));
+          "/reports/**"));
 
   public static final Map<HttpMethod, List<String>> ADMIN_PROTECTED_ENDPOINTS = Map.of(HttpMethod.GET, List.of(
       "/admin/**"),
