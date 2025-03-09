@@ -2,7 +2,6 @@ package com.marcelobatista.dev.helpingPets.src.modules.users.web;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.view.RedirectView;
 
 import com.marcelobatista.dev.helpingPets.src.modules.users.application.service.UserService;
 import com.marcelobatista.dev.helpingPets.src.modules.users.dto.CreateUserRequestDto;

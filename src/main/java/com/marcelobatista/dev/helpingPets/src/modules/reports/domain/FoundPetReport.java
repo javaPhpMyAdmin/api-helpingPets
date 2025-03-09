@@ -6,6 +6,7 @@ import java.util.Optional;
 import com.marcelobatista.dev.helpingPets.src.modules.reports.dto.FoundPetReportDTOs.UpdateFoundPetReportDTO;
 import com.marcelobatista.dev.helpingPets.src.modules.users.domain.User;
 import com.marcelobatista.dev.helpingPets.src.shared.enums.ReportStatus;
+import com.marcelobatista.dev.helpingPets.src.shared.enums.ReportType;
 import com.marcelobatista.dev.helpingPets.src.shared.exceptions.ApiException;
 
 import jakarta.persistence.Entity;
@@ -51,6 +52,10 @@ public class FoundPetReport {
   private Double latitude;
   @Setter
   private Double longitude;
+
+  @Enumerated(EnumType.STRING)
+  @Setter
+  private ReportType reportType = ReportType.FOUND;
 
   @Enumerated(EnumType.STRING)
   @Setter

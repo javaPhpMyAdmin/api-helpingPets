@@ -1,6 +1,9 @@
 package com.marcelobatista.dev.helpingPets.src.modules.pets.dto;
 
+import java.util.List;
+
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,8 +26,9 @@ public class PetCreateDTO {
   @Size(max = 500, message = "Description cannot be longer than 500 characters")
   private String description;
 
-  @NotBlank(message = "Image URL cannot be empty")
-  private String imageUrl;
+  @NotEmpty(message = "At least one image is required")
+  @Size(min = 1, message = "At least one image URL must be provided")
+  private List<@NotBlank(message = "Image URL cannot be empty") String> imageUrls;
 
   @NotBlank(message = "Status cannot be empty")
   private String status;

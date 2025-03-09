@@ -1,8 +1,11 @@
 package com.marcelobatista.dev.helpingPets.src.modules.reports.web;
 
+import java.util.List;
 import java.util.Map;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,16 +14,21 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.marcelobatista.dev.helpingPets.src.modules.reports.application.service.FoundPetReportService;
 import com.marcelobatista.dev.helpingPets.src.modules.reports.application.service.LostPetReportService;
+import com.marcelobatista.dev.helpingPets.src.modules.reports.application.service.PetReportService;
 import com.marcelobatista.dev.helpingPets.src.modules.reports.dto.FoundPetReportDTOs.CreateFoundPetReportDTO;
 import com.marcelobatista.dev.helpingPets.src.modules.reports.dto.FoundPetReportDTOs.UpdateFoundPetReportDTO;
 import com.marcelobatista.dev.helpingPets.src.modules.reports.dto.LostPetReportDTOs.CreateLostPetReportDTO;
 import com.marcelobatista.dev.helpingPets.src.modules.reports.dto.LostPetReportDTOs.UpdateLostPetReportDTO;
 import com.marcelobatista.dev.helpingPets.src.shared.Response.GlobalResponse;
 import com.marcelobatista.dev.helpingPets.src.shared.utils.RequestUtils;
+import com.marcelobatista.dev.helpingPets.src.shared.utils.Pageable.PageableHelper;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -39,23 +47,39 @@ public class ReportController {
   private final LostPetReportService lostPetService;
   private final FoundPetReportService foundPetService;
   private final RequestUtils requestUtils;
+  private final PetReportService petReportService;
 
   @GetMapping()
-  public ResponseEntity<?> getAllReports() {
-    return ResponseEntity.ok().body(Map.of("Message", "Getting all Reports"));
+  public ResponseEntity<?> getAllReports(@RequestParam(required = false) Integer page,
+      @RequestParam(required = false) Integer size, HttpServletRequest request) {
+
+    Pageable pageable = PageableHelper.createPageable(page, size);
+
+    return ResponseEntity.ok()
+        .body(requestUtils.getResponse(request, Map.of("Result", petReportService.getAllReports(pageable)),
+            "PetReports retrieved", HttpStatus.OK));
   }
 
   @GetMapping("/lost-pet")
-  public ResponseEntity<?> getAllLostPetReports(HttpServletRequest request) {
+  public ResponseEntity<?> getAllLostPetReports(@RequestParam(required = false) Integer page,
+      @RequestParam(required = false) Integer size, HttpServletRequest request) {
+
+    Pageable pageable = PageableHelper.createPageable(page, size);
+
     return ResponseEntity.ok()
-        .body(requestUtils.getResponse(request, Map.of("Result", lostPetService.getAllReports()),
+        .body(requestUtils.getResponse(request, Map.of("Result", lostPetService.getAllReports(pageable)),
             "LostPetReports retrieved", HttpStatus.OK));
   }
 
   @GetMapping("/found-pet")
-  public ResponseEntity<?> getAllFoundPetReports(HttpServletRequest request) {
-    return ResponseEntity.ok().body(requestUtils.getResponse(request, Map.of("Result", foundPetService.getAllReports()),
-        "FoundPetReports retrieved", HttpStatus.OK));
+  public ResponseEntity<?> getAllFoundPetReports(@RequestParam(required = false) Integer page,
+      @RequestParam(required = false) Integer size, HttpServletRequest request) {
+
+    Pageable pageable = PageableHelper.createPageable(page, size);
+
+    return ResponseEntity.ok()
+        .body(requestUtils.getResponse(request, Map.of("Result", foundPetService.getAllReports(pageable)),
+            "FoundPetReports retrieved", HttpStatus.OK));
   }
 
   @GetMapping("/lost-pet/{petId}")
@@ -72,10 +96,21 @@ public class ReportController {
             "FoundPetReport retrieved", HttpStatus.OK));
   }
 
-  @PostMapping("/lost-pet")
+  @PostMapping(value = "/lost-pet", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ResponseEntity<GlobalResponse> createLostPetReport(
-      @RequestBody @Valid CreateLostPetReportDTO createLostPetReportDTO,
+      @RequestPart("petName") String petName,
+      @RequestPart("breed") String breed,
+      @RequestPart("description") String description,
+      @RequestPart("contactEmail") String contactEmail,
+      @RequestPart("imageUrls") List<MultipartFile> imageUrls,
       HttpServletRequest request) {
+    CreateLostPetReportDTO createLostPetReportDTO = CreateLostPetReportDTO.builder()
+        .petName(petName)
+        .breed(breed)
+        .description(description)
+        .contactEmail(contactEmail)
+        .imageUrls(imageUrls)
+        .build();
     return ResponseEntity.ok()
         .body(requestUtils.getResponse(request, Map.of("Result", lostPetService.createReport(createLostPetReportDTO)),
             "New Report Added", HttpStatus.CREATED));

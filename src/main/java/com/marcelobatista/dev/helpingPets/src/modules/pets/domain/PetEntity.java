@@ -1,6 +1,8 @@
 package com.marcelobatista.dev.helpingPets.src.modules.pets.domain;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.annotation.CreatedDate;
@@ -11,6 +13,9 @@ import com.marcelobatista.dev.helpingPets.src.modules.users.domain.User;
 import com.marcelobatista.dev.helpingPets.src.shared.enums.PetStatus;
 import com.marcelobatista.dev.helpingPets.src.shared.exceptions.ApiException;
 
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -45,8 +50,13 @@ public class PetEntity {
   private String breed;
   @Setter
   private String description;
+
+  @ElementCollection
+  @CollectionTable(name = "pet_images", joinColumns = @JoinColumn(name = "pet_id"))
+  @Column(name = "image_url")
   @Setter
-  private String imageUrl;
+  @Builder.Default
+  private List<String> imageUrls = new ArrayList<>(); // Lista de URLs de imágenes
 
   @Enumerated(EnumType.STRING)
   @Setter
@@ -87,7 +97,7 @@ public class PetEntity {
     Optional.ofNullable(petUpdateDTO.getName()).ifPresent(this::setName);
     Optional.ofNullable(petUpdateDTO.getBreed()).ifPresent(this::setBreed);
     Optional.ofNullable(petUpdateDTO.getDescription()).ifPresent(this::setDescription);
-    Optional.ofNullable(petUpdateDTO.getImageUrl()).ifPresent(this::setImageUrl);
+    Optional.ofNullable(petUpdateDTO.getImageUrls()).ifPresent(this::setImageUrls);
 
     Optional.ofNullable(petUpdateDTO.getStatus()).ifPresent(status -> {
       try {

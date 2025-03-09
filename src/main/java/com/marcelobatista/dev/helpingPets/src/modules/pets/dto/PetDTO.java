@@ -1,5 +1,7 @@
 package com.marcelobatista.dev.helpingPets.src.modules.pets.dto;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,7 +19,7 @@ public class PetDTO {
   private String breed;
 
   private String description;
-  private String imageUrl;
+  private List<String> imageUrls;
 
   private String status;
 

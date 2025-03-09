@@ -10,6 +10,8 @@ import com.marcelobatista.dev.helpingPets.src.shared.enums.ReportStatus;
 
 @Repository
 public interface LostPetReportRepository extends JpaRepository<LostPetReport, Long> {
+  // Page<LostPetReport> findAll(Pageable pageable);
+
   List<LostPetReport> findByStatus(ReportStatus status);
 
   List<LostPetReport> findByReporter_Id(Long reporterId);

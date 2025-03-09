@@ -12,6 +12,7 @@ import io.github.cdimascio.dotenv.Dotenv;
 @ConfigurationPropertiesScan
 public class HelpingPetsApplication {
 
+  @SuppressWarnings("unused")
   public static void main(String[] args) {
     Dotenv dotenv = Dotenv.configure()
         .filename(".env.dev")

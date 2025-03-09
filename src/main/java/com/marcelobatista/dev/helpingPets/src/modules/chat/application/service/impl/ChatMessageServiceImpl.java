@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import com.marcelobatista.dev.helpingPets.src.modules.chat.application.service.ChatMessageService;
@@ -26,7 +25,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
 
   private final ChatMessageRepository messageRepository;
   private final ConversationRepository conversationRepository;
-  private final SimpMessagingTemplate messagingTemplate;
+  // private final SimpMessagingTemplate messagingTemplate;
   private final UserRepository userRepository;
   private final ChatMessageMapper messageMapper;
 

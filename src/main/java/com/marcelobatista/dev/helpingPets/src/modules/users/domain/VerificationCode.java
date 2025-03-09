@@ -2,8 +2,6 @@ package com.marcelobatista.dev.helpingPets.src.modules.users.domain;
 
 import java.util.UUID;
 
-import org.apache.commons.lang3.RandomStringUtils;
-
 import com.marcelobatista.dev.helpingPets.src.shared.utils.Client;
 
 import jakarta.persistence.Entity;

@@ -16,4 +16,8 @@ public interface PetRepository extends JpaRepository<PetEntity, Long> {
   List<PetEntity> findByStatus(@Param("status") PetStatus status);
 
   List<PetEntity> findByOwnerId(Long ownerId);
+
+  // TODO: FOR TESTING PURPOSES
+  @Query(value = "SELECT * FROM pets p WHERE p.name = :name ORDER BY p.noExiste DESC", nativeQuery = true)
+  List<PetEntity> findByName(@Param("name") String name);
 }

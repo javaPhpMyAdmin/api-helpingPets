@@ -1,9 +1,9 @@
 package com.marcelobatista.dev.helpingPets.src.modules.reports.application.service.impl;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +17,7 @@ import com.marcelobatista.dev.helpingPets.src.modules.reports.infrastructure.Fou
 import com.marcelobatista.dev.helpingPets.src.modules.reports.mapper.FoundPetReportMapper;
 import com.marcelobatista.dev.helpingPets.src.security.infrastructure.SecurityUtil;
 import com.marcelobatista.dev.helpingPets.src.shared.enums.ReportStatus;
+import com.marcelobatista.dev.helpingPets.src.shared.enums.ReportType;
 import com.marcelobatista.dev.helpingPets.src.shared.exceptions.ApiException;
 
 import lombok.RequiredArgsConstructor;
@@ -37,6 +38,7 @@ public class FoundPetReportServiceImpl implements FoundPetReportService {
     FoundPetReport foundPetReport = foundPetReportMapper.toEntity(createFoundPetReportDTO);
     foundPetReport.setReporter(currentUser);
     foundPetReport.setStatus(ReportStatus.OPEN);
+    foundPetReport.setReportType(ReportType.FOUND);
 
     return foundPetReportMapper.toDto(
         Optional.of(foundPetRepository.save(foundPetReport))
@@ -46,14 +48,10 @@ public class FoundPetReportServiceImpl implements FoundPetReportService {
 
   @Override
   @Transactional(readOnly = true)
-  public List<FoundPetReportDTO> getAllReports() {
-    List<FoundPetReport> reports = foundPetRepository.findAll();
+  public Page<FoundPetReportDTO> getAllReports(Pageable pageable) {
+    Page<FoundPetReport> reports = foundPetRepository.findAll(pageable);
 
-    if (reports.isEmpty()) {
-      return Collections.emptyList();
-    }
-
-    return foundPetReportMapper.toDtoList(reports);
+    return reports.map(foundPetReportMapper::toDto);
   }
 
   @Override

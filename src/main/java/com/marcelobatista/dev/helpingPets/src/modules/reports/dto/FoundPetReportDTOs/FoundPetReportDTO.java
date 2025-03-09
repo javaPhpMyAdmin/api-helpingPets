@@ -3,6 +3,7 @@ package com.marcelobatista.dev.helpingPets.src.modules.reports.dto.FoundPetRepor
 import java.time.LocalDateTime;
 
 import com.marcelobatista.dev.helpingPets.src.shared.enums.ReportStatus;
+import com.marcelobatista.dev.helpingPets.src.shared.enums.ReportType;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,6 +18,8 @@ import lombok.Setter;
 @Builder
 public class FoundPetReportDTO {
   private Long id;
+  private ReportType reportType;
+  private String title;
   private Long reporterId;
   private String imageUrl;
   private String description;

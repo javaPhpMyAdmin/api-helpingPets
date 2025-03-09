@@ -1,5 +1,7 @@
 package com.marcelobatista.dev.helpingPets.src.modules.reports.dto.LostPetReportDTOs;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,6 +18,6 @@ public class UpdateLostPetReportDTO {
   private String petName;
   private String breed;
   private String description;
-  private String imageUrl;
+  private List<String> imageUrls;
   private String status;
 }

@@ -1,6 +1,11 @@
 package com.marcelobatista.dev.helpingPets.src.modules.reports.dto.LostPetReportDTOs;
 
+import java.util.List;
+
+import org.springframework.web.multipart.MultipartFile;
+
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,8 +29,9 @@ public class CreateLostPetReportDTO {
   @Size(max = 500, message = "Description cannot be longer than 500 characters")
   private String description;
 
-  @NotBlank(message = "Image cannot be empty")
-  private String imageUrl;
+  @NotEmpty(message = "At least one image is required")
+  @Size(min = 1, message = "At least one image URL must be provided")
+  private List<MultipartFile> imageUrls;
 
   @NotBlank(message = "Contact email cannot be empty")
   private String contactEmail;

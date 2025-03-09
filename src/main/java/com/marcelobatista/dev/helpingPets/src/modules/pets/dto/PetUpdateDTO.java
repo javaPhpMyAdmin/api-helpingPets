@@ -1,5 +1,7 @@
 package com.marcelobatista.dev.helpingPets.src.modules.pets.dto;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import lombok.AllArgsConstructor;
@@ -20,7 +22,7 @@ public class PetUpdateDTO {
   private String name;
   private String breed;
   private String description;
-  private String imageUrl;
+  private List<String> imageUrls;
   private String status; // Puede cambiarse opcionalmente
 
 }

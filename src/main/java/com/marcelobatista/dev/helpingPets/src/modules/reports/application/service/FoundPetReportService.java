@@ -1,6 +1,7 @@
 package com.marcelobatista.dev.helpingPets.src.modules.reports.application.service;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import com.marcelobatista.dev.helpingPets.src.modules.reports.dto.FoundPetReportDTOs.CreateFoundPetReportDTO;
 import com.marcelobatista.dev.helpingPets.src.modules.reports.dto.FoundPetReportDTOs.FoundPetReportDTO;
@@ -9,7 +10,7 @@ import com.marcelobatista.dev.helpingPets.src.modules.reports.dto.FoundPetReport
 public interface FoundPetReportService {
   FoundPetReportDTO createReport(CreateFoundPetReportDTO createFoundPetReportDTO);
 
-  List<FoundPetReportDTO> getAllReports();
+  Page<FoundPetReportDTO> getAllReports(Pageable pageable);
 
   FoundPetReportDTO getReportById(Long foundPetId);
 

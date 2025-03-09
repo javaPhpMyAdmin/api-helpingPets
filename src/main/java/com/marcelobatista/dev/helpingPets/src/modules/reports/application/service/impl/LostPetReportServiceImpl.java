@@ -1,13 +1,16 @@
 package com.marcelobatista.dev.helpingPets.src.modules.reports.application.service.impl;
 
-import java.util.Collections;
+import java.io.IOException;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.marcelobatista.dev.helpingPets.src.modules.reports.application.service.LostPetReportService;
 import com.marcelobatista.dev.helpingPets.src.modules.reports.domain.LostPetReport;
@@ -18,7 +21,9 @@ import com.marcelobatista.dev.helpingPets.src.modules.reports.infrastructure.Los
 import com.marcelobatista.dev.helpingPets.src.modules.reports.mapper.LostPetReportMapper;
 import com.marcelobatista.dev.helpingPets.src.modules.users.domain.User;
 import com.marcelobatista.dev.helpingPets.src.security.infrastructure.SecurityUtil;
+import com.marcelobatista.dev.helpingPets.src.shared.ImageService.ImageService;
 import com.marcelobatista.dev.helpingPets.src.shared.enums.ReportStatus;
+import com.marcelobatista.dev.helpingPets.src.shared.enums.ReportType;
 import com.marcelobatista.dev.helpingPets.src.shared.exceptions.ApiException;
 
 import lombok.RequiredArgsConstructor;
@@ -30,6 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 public class LostPetReportServiceImpl implements LostPetReportService {
   private final LostPetReportRepository lostPetReportRepository;
   private final LostPetReportMapper lostPetReportMapper;
+  private final ImageService imageService;
 
   @Override
   @Transactional
@@ -42,22 +48,37 @@ public class LostPetReportServiceImpl implements LostPetReportService {
     var lostPetReport = lostPetReportMapper.toEntity(createLostPetReportDTO);
     lostPetReport.setReporter(currentUser);
     lostPetReport.setStatus(ReportStatus.OPEN);
+    lostPetReport.setReportType(ReportType.LOST);
+
+    // Subir las imágenes a Cloudinary y obtener sus URLs
+    if (createLostPetReportDTO.getImageUrls() != null && !createLostPetReportDTO.getImageUrls().isEmpty()) {
+      List<String> imageUrls = createLostPetReportDTO.getImageUrls().stream()
+          .map(this::uploadImageToCloudinary)
+          .collect(Collectors.toList());
+      lostPetReport.setImageUrls(imageUrls);
+    }
 
     return lostPetReportMapper.toDto(
         Optional.of(lostPetReportRepository.save(lostPetReport))
             .orElseThrow(() -> ApiException.builder().status(500).message("Failed to save lostPetReport").build()));
   }
 
+  // Método para subir una imagen a Cloudinary
+  private String uploadImageToCloudinary(MultipartFile image) {
+    try {
+      // Subir la imagen a Cloudinary y obtener la URL segura
+      return imageService.uploadImage(image);
+    } catch (IOException e) {
+      throw ApiException.builder().status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+          .message("Failed to upload image to Cloudinary: " + e.getMessage()).build();
+    }
+  }
+
   @Override
   @Transactional(readOnly = true)
-  public List<LostPetReportDTO> getAllReports() {
-    List<LostPetReport> reports = lostPetReportRepository.findAll();
-
-    if (reports.isEmpty()) {
-      return Collections.emptyList();
-    }
-
-    return lostPetReportMapper.toDtoList(reports);
+  public Page<LostPetReportDTO> getAllReports(Pageable pageable) {
+    Page<LostPetReport> reports = lostPetReportRepository.findAll(pageable);
+    return reports.map(lostPetReportMapper::toDto);
   }
 
   @Override
@@ -89,7 +110,7 @@ public class LostPetReportServiceImpl implements LostPetReportService {
 
     LostPetReport lostPetReport = lostPetReportRepository.findById(updateLostPetReportDTO.getLostPetReportId())
         .orElseThrow(() -> ApiException.builder().status(HttpStatus.BAD_REQUEST.value())
-            .message(("LostPetReport with this id " + updateLostPetReportDTO.getLostPetReportId() + "not found"))
+            .message(("LostPetReport with this id " + updateLostPetReportDTO.getLostPetReportId() + " not found"))
             .build());
 
     var currentUser = Optional.ofNullable(SecurityUtil.getAuthenticatedUser())

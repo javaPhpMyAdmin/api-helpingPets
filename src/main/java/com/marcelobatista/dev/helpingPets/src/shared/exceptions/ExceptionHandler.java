@@ -1,33 +1,37 @@
 package com.marcelobatista.dev.helpingPets.src.shared.exceptions;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
-import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
-import org.springframework.messaging.handler.annotation.support.MethodArgumentTypeMismatchException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import com.marcelobatista.dev.helpingPets.src.shared.utils.HttpErrorResponse;
+import com.marcelobatista.dev.helpingPets.src.shared.Response.CustomErrorResponse;
+import com.marcelobatista.dev.helpingPets.src.shared.utils.RequestUtils;
 
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @ControllerAdvice
+@RequiredArgsConstructor
 @Slf4j
 public class ExceptionHandler extends ResponseEntityExceptionHandler {
+  private final RequestUtils requestUtils;
 
   @Override
   protected ResponseEntity<Object> handleMethodArgumentNotValid(@NonNull MethodArgumentNotValidException ex,
@@ -44,54 +48,85 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
       }
     });
 
-    HttpErrorResponse response = HttpErrorResponse.of("Unprocessable entity", 422, errors, generalErrors);
+    CustomErrorResponse response = requestUtils.getResponseForError((ServletWebRequest) request, errors,
+        "Unprocessable entity",
+        HttpStatus.valueOf(422));
 
     return new ResponseEntity<Object>(response, HttpStatus.UNPROCESSABLE_ENTITY);
   }
 
   @org.springframework.web.bind.annotation.ExceptionHandler(ApiException.class)
-  public ResponseEntity<HttpErrorResponse> handleException(ApiException e) {
+  public ResponseEntity<CustomErrorResponse> handleException(ApiException e, HttpServletRequest request) {
     log.info("Handling ApiException: {}", e.getMessage());
-    var response = HttpErrorResponse.of(e.getMessage(), e.getStatus(), e.getErrors(), null);
-    return new ResponseEntity<HttpErrorResponse>(response, HttpStatus.valueOf(e.getStatus()));
+
+    CustomErrorResponse response = new CustomErrorResponse(
+        Instant.now().toString(),
+        e.getStatus(),
+        request.getRequestURI(),
+        HttpStatus.valueOf(e.getStatus()),
+        e.getMessage(),
+        e.getClass().getSimpleName(),
+        Map.of());
+    return new ResponseEntity<CustomErrorResponse>(response, HttpStatus.valueOf(e.getStatus()));
   }
 
   @org.springframework.web.bind.annotation.ExceptionHandler(BadCredentialsException.class)
-  public ResponseEntity<HttpErrorResponse> handleException(BadCredentialsException e) {
+
+  public ResponseEntity<CustomErrorResponse> handleException(BadCredentialsException e, HttpServletRequest request) {
     log.info("Handling BadCredentialsException: {}", e.getMessage());
-    var response = HttpErrorResponse.of(e.getMessage(), 401, null, null);
-    return new ResponseEntity<HttpErrorResponse>(response, HttpStatus.valueOf(401));
+    CustomErrorResponse response = new CustomErrorResponse(
+        Instant.now().toString(),
+        HttpStatus.UNAUTHORIZED.value(),
+        request.getRequestURI(),
+        HttpStatus.valueOf(HttpStatus.UNAUTHORIZED.value()),
+        e.getMessage(),
+        e.getClass().getSimpleName(),
+        Map.of());
+    return new ResponseEntity<CustomErrorResponse>(response, HttpStatus.UNAUTHORIZED);
   }
 
   @org.springframework.web.bind.annotation.ExceptionHandler(AuthorizationDeniedException.class)
-  public ResponseEntity<HttpErrorResponse> handleException(AuthorizationDeniedException e) {
+  public ResponseEntity<CustomErrorResponse> handleException(AuthorizationDeniedException e,
+      HttpServletRequest request) {
     log.info("Handling AuthorizationDeniedException: {}", e.getMessage());
-    var response = HttpErrorResponse.of(e.getMessage(), 403, null, null);
-    return new ResponseEntity<HttpErrorResponse>(response, HttpStatus.valueOf(403));
+    CustomErrorResponse response = new CustomErrorResponse(
+        Instant.now().toString(),
+        HttpStatus.FORBIDDEN.value(),
+        request.getRequestURI(),
+        HttpStatus.valueOf(HttpStatus.FORBIDDEN.value()),
+        e.getMessage(),
+        e.getClass().getSimpleName(),
+        Map.of());
+    return new ResponseEntity<CustomErrorResponse>(response, HttpStatus.FORBIDDEN);
   }
 
   @org.springframework.web.bind.annotation.ExceptionHandler(Exception.class)
-  public ResponseEntity<HttpErrorResponse> handleException(Exception e) {
+  public ResponseEntity<CustomErrorResponse> handleException(Exception e, HttpServletRequest request) {
     log.error("Unhandled exception", e);
-    var response = HttpErrorResponse.of("Unexpected internal error", 500);
-    return new ResponseEntity<HttpErrorResponse>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    CustomErrorResponse response = new CustomErrorResponse(
+        Instant.now().toString(),
+        HttpStatus.INTERNAL_SERVER_ERROR.value(),
+        request.getRequestURI(),
+        HttpStatus.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()),
+        e.getMessage(),
+        e.getClass().getSimpleName(),
+        Map.of());
+    return new ResponseEntity<CustomErrorResponse>(response, HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
   @org.springframework.web.bind.annotation.ExceptionHandler(IllegalArgumentException.class)
-  public ResponseEntity<HttpErrorResponse> handleException(IllegalArgumentException e) {
+  public ResponseEntity<CustomErrorResponse> handleException(IllegalArgumentException e, HttpServletRequest request) {
     log.error("Handling IllegalArgumentException: {}", e);
-    var response = HttpErrorResponse.of(e.getMessage(), 400, null, null);
-    return new ResponseEntity<HttpErrorResponse>(response,
-        HttpStatus.INTERNAL_SERVER_ERROR);
-  }
-
-  @org.springframework.web.bind.annotation.ExceptionHandler(BadRequestException.class)
-  public ResponseEntity<?> handleTypeMismatchException(MethodArgumentTypeMismatchException ex) {
-    // Obtener el nombre del parámetro que causó el error
-    String parameterName = ex.getCause().toString(); // Puede ser nulo o vacio dependiendo de la situación.
-    String message = "Argument type mismatch: " + ex.getMessage();
-
-    return ResponseEntity.badRequest().body(parameterName.toString());
+    CustomErrorResponse response = new CustomErrorResponse(
+        Instant.now().toString(),
+        HttpStatus.BAD_REQUEST.value(),
+        request.getRequestURI(),
+        HttpStatus.valueOf(HttpStatus.BAD_REQUEST.value()),
+        e.getMessage(),
+        e.getClass().getSimpleName(),
+        Map.of());
+    return new ResponseEntity<CustomErrorResponse>(response,
+        HttpStatus.BAD_REQUEST);
   }
 
 }

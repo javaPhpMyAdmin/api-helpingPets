@@ -16,3 +16,13 @@ public class ApiException extends RuntimeException {
   private Map<String, String> errors;
 
 }
+// @Getter
+// public class ApiException extends ResponseStatusException {
+
+// private final Map<String, String> errors;
+
+// public ApiException(int status, String message, Map<String, String> errors) {
+// super(HttpStatus.valueOf(status), message);
+// this.errors = errors;
+// }
+// }
