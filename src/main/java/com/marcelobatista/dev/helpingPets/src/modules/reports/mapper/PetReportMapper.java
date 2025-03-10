@@ -9,6 +9,7 @@ import com.marcelobatista.dev.helpingPets.src.modules.reports.dto.LostPetReportD
 
 @Mapper(componentModel = "spring")
 public interface PetReportMapper {
+
   @Mapping(target = "title", ignore = true)
   @Mapping(source = "reporterId", target = "reportedBy")
   @Mapping(target = "latitude", ignore = true)

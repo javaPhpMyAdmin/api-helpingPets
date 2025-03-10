@@ -2,14 +2,13 @@ package com.marcelobatista.dev.helpingPets.src.modules.chat.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
 
 import com.marcelobatista.dev.helpingPets.src.modules.chat.domain.ChatMessageEntity;
 import com.marcelobatista.dev.helpingPets.src.modules.chat.dto.ChatMessageDTO;
 
 @Mapper(componentModel = "spring")
 public interface ChatMessageMapper {
-  ChatMessageMapper INSTANCE = Mappers.getMapper(ChatMessageMapper.class);
+  // ChatMessageMapper INSTANCE = Mappers.getMapper(ChatMessageMapper.class);
 
   @Mapping(source = "conversation.id", target = "conversationId")
   @Mapping(source = "sender.id", target = "senderId")

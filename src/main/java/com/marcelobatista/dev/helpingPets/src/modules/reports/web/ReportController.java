@@ -116,10 +116,24 @@ public class ReportController {
             "New Report Added", HttpStatus.CREATED));
   }
 
-  @PostMapping("/found-pet")
+  @PostMapping(value = "/found-pet", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ResponseEntity<?> createFoundPetReport(
-      @RequestBody @Valid CreateFoundPetReportDTO createFoundPetReportDTO,
+      @RequestParam("title") String title,
+      @RequestParam("description") String description,
+      @RequestParam("latitude") Double latitude,
+      @RequestParam("longitude") Double longitude,
+      @RequestParam("foundPetStatus") String foundPetStatus,
+      @RequestParam("imageUrl") MultipartFile imageUrl,
       HttpServletRequest request) {
+
+    CreateFoundPetReportDTO createFoundPetReportDTO = CreateFoundPetReportDTO.builder()
+        .title(title)
+        .imageUrl(imageUrl)
+        .description(description)
+        .latitude(latitude)
+        .longitude(longitude)
+        .foundPetStatus(foundPetStatus)
+        .build();
     return ResponseEntity.ok()
         .body(requestUtils.getResponse(request, Map.of("Result",
             foundPetService.createReport(createFoundPetReportDTO)),

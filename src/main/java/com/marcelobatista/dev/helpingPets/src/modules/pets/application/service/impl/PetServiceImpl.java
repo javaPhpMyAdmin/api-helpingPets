@@ -1,9 +1,14 @@
 package com.marcelobatista.dev.helpingPets.src.modules.pets.application.service.impl;
 
-import java.util.Collections;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,8 +21,11 @@ import com.marcelobatista.dev.helpingPets.src.modules.pets.dto.PetUpdateDTO;
 import com.marcelobatista.dev.helpingPets.src.modules.pets.infrastructure.PetRepository;
 import com.marcelobatista.dev.helpingPets.src.modules.pets.mapper.PetMapper;
 import com.marcelobatista.dev.helpingPets.src.modules.users.domain.User;
+import com.marcelobatista.dev.helpingPets.src.modules.users.infrastructure.UserRepository;
 import com.marcelobatista.dev.helpingPets.src.security.infrastructure.SecurityUtil;
+import com.marcelobatista.dev.helpingPets.src.shared.ImageService.UploadImage;
 import com.marcelobatista.dev.helpingPets.src.shared.enums.PetStatus;
+import com.marcelobatista.dev.helpingPets.src.shared.enums.ReportType;
 import com.marcelobatista.dev.helpingPets.src.shared.exceptions.ApiException;
 
 import lombok.RequiredArgsConstructor;
@@ -30,6 +38,8 @@ public class PetServiceImpl implements PetService {
 
   private final PetMapper petMapper;
   private final PetRepository petRepository;
+  private final UserRepository userRepository;
+  private final UploadImage uploadImage;
 
   @Override
   @Transactional
@@ -38,13 +48,29 @@ public class PetServiceImpl implements PetService {
     PetEntity pet = petMapper.toEntity(petCreateDTO);
 
     User owner = Optional.ofNullable(SecurityUtil.getAuthenticatedUser())
-        .orElseThrow(() -> ApiException.builder().status(401).message("unauthorized: user not authenticated").build());
+        .orElseThrow(() -> ApiException.builder()
+            .status(HttpStatus.UNAUTHORIZED.value())
+            .message("unauthorized: user not authenticated").build());
 
     pet.assignOwner(owner);
-    pet.setPetStatus(PetStatus.AVAILABLE);
+    pet.setPetStatus(PetStatus.valueOf(petCreateDTO.getStatus()));
+
+    if (petCreateDTO.getImageUrls() != null && !petCreateDTO.getImageUrls().isEmpty()) {
+      List<String> imageUrls = petCreateDTO.getImageUrls().stream()
+          .map(t -> {
+            try {
+              return uploadImage.uploadImageToCloudinary(t, ReportType.ADOPTION);
+            } catch (IOException e) {
+              throw new UncheckedIOException("Failed to upload image to Cloudinary", e);
+            }
+          }).collect(Collectors.toList());
+      pet.setImageUrls(imageUrls);
+    }
 
     PetEntity savedPet = Optional.of(petRepository.save(pet))
-        .orElseThrow(() -> ApiException.builder().status(500).message("Failed to save pet").build());
+        .orElseThrow(() -> ApiException.builder()
+            .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+            .message("Failed to save pet").build());
 
     return petMapper.toDto(savedPet);
   }
@@ -85,23 +111,47 @@ public class PetServiceImpl implements PetService {
 
   @Override
   @Transactional(readOnly = true)
-  public List<PetDTO> getAllPets() {
-    List<PetEntity> pets = petRepository.findAll();
-    return pets.isEmpty() ? Collections.emptyList() : petMapper.toDtoList(pets);
+  public Page<PetDTO> getAllPets(Pageable pageable) {
+    Page<PetEntity> pets = petRepository.findAll(pageable);
+    return pets.map(petMapper::toDto);
   }
 
   @Override
   @Transactional(readOnly = true)
-  public List<PetDTO> getPetsByStatus(PetStatus status) {
-    List<PetEntity> pets = petRepository.findByStatus(status);
-    return pets.isEmpty() ? Collections.emptyList() : petMapper.toDtoList(pets);
+  public Page<PetDTO> getPetsByStatus(String status, Pageable pageable) {
+    PetStatus petStatus = PetStatus.valueOf(status.toUpperCase());
+    Page<PetEntity> pets = petRepository.findByPetStatus(petStatus.name(), pageable);
+    return pets.map(petMapper::toDto);
   }
 
   @Override
   @Transactional(readOnly = true)
-  public List<PetDTO> getPetsByOwner(Long ownerId) {
-    List<PetEntity> pets = petRepository.findByOwnerId(ownerId);
-    return pets.isEmpty() ? Collections.emptyList() : petMapper.toDtoList(pets);
+  public Page<PetDTO> getPetsByOwner(Long ownerId, Pageable pageable) {
+
+    Objects.requireNonNull(ownerId, "Owner ID must not be null");
+
+    var owner = userRepository.findById(ownerId)
+        .orElseThrow(() -> ApiException.builder()
+            .status(HttpStatus.NOT_FOUND.value())
+            .message("Owner not found")
+            .build());
+
+    var currentUser = Optional.ofNullable(SecurityUtil.getAuthenticatedUser())
+        .orElseThrow(() -> ApiException.builder()
+            .status(HttpStatus.UNAUTHORIZED.value())
+            .message("User must be authenticated")
+            .build());
+
+    if (!owner.getId().equals(currentUser.getId())) {
+      throw ApiException.builder()
+          .status(HttpStatus.FORBIDDEN.value())
+          .message("You are not the owner of this pet")
+          .build();
+    }
+
+    Page<PetEntity> pets = petRepository.findByOwnerId(currentUser.getId(), pageable);
+
+    return pets.map(petMapper::toDto);
   }
 
   @Override

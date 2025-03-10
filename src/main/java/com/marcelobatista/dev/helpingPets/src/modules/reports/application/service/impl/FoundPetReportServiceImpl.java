@@ -1,5 +1,7 @@
 package com.marcelobatista.dev.helpingPets.src.modules.reports.application.service.impl;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -16,6 +18,7 @@ import com.marcelobatista.dev.helpingPets.src.modules.reports.dto.FoundPetReport
 import com.marcelobatista.dev.helpingPets.src.modules.reports.infrastructure.FoundPetRepository;
 import com.marcelobatista.dev.helpingPets.src.modules.reports.mapper.FoundPetReportMapper;
 import com.marcelobatista.dev.helpingPets.src.security.infrastructure.SecurityUtil;
+import com.marcelobatista.dev.helpingPets.src.shared.ImageService.UploadImage;
 import com.marcelobatista.dev.helpingPets.src.shared.enums.ReportStatus;
 import com.marcelobatista.dev.helpingPets.src.shared.enums.ReportType;
 import com.marcelobatista.dev.helpingPets.src.shared.exceptions.ApiException;
@@ -27,6 +30,7 @@ import lombok.RequiredArgsConstructor;
 public class FoundPetReportServiceImpl implements FoundPetReportService {
   private final FoundPetRepository foundPetRepository;
   private final FoundPetReportMapper foundPetReportMapper;
+  private final UploadImage uploadImage;
 
   @Override
   @Transactional
@@ -39,6 +43,19 @@ public class FoundPetReportServiceImpl implements FoundPetReportService {
     foundPetReport.setReporter(currentUser);
     foundPetReport.setStatus(ReportStatus.OPEN);
     foundPetReport.setReportType(ReportType.FOUND);
+
+    // Subir las imágenes a Cloudinary y obtener sus URLs
+    if (createFoundPetReportDTO.getImageUrl() != null && !createFoundPetReportDTO.getImageUrl().isEmpty()) {
+
+      String imageUrl = "";
+      try {
+        imageUrl = uploadImage.uploadImageToCloudinary(createFoundPetReportDTO.getImageUrl(), ReportType.FOUND);
+      } catch (IOException e) {
+        throw new UncheckedIOException("Failed to upload image to Cloudinary", e);
+      }
+
+      foundPetReport.setImageUrl(imageUrl);
+    }
 
     return foundPetReportMapper.toDto(
         Optional.of(foundPetRepository.save(foundPetReport))

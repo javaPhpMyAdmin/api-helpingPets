@@ -1,6 +1,9 @@
 package com.marcelobatista.dev.helpingPets.src.modules.reports.dto.FoundPetReportDTOs;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -18,8 +21,8 @@ public class CreateFoundPetReportDTO {
   @NotBlank(message = "Title is required")
   private String title;
 
-  @NotBlank(message = "Image is required")
-  private String imageUrl;
+  @NotEmpty(message = "At least one image is required")
+  private MultipartFile imageUrl;
 
   @NotBlank(message = "Description is required")
   @Size(max = 500, message = "Description cannot be longer than 500 characters")

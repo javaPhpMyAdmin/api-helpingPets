@@ -1,24 +1,24 @@
 package com.marcelobatista.dev.helpingPets.src.modules.pets.application.service;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import com.marcelobatista.dev.helpingPets.src.modules.pets.dto.PetCreateDTO;
 import com.marcelobatista.dev.helpingPets.src.modules.pets.dto.PetDTO;
 import com.marcelobatista.dev.helpingPets.src.modules.pets.dto.PetUpdateDTO;
-import com.marcelobatista.dev.helpingPets.src.shared.enums.PetStatus;
 
 public interface PetService {
   PetDTO createPet(PetCreateDTO petCreateDTO);
 
   PetDTO updatePet(PetUpdateDTO petUpdateDTO);
 
-  List<PetDTO> getAllPets();
+  Page<PetDTO> getAllPets(Pageable pageable);
 
-  List<PetDTO> getPetsByStatus(PetStatus status);
+  Page<PetDTO> getPetsByStatus(String status, Pageable pageable);
 
   PetDTO getPetById(Long petId);
 
-  List<PetDTO> getPetsByOwner(Long ownerId);
+  Page<PetDTO> getPetsByOwner(Long ownerId, Pageable pageable);
 
   void deletePet(Long petId);
 

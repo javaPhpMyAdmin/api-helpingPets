@@ -11,6 +11,7 @@ import com.marcelobatista.dev.helpingPets.src.modules.pets.dto.PetDTO;
 
 @Mapper(componentModel = "spring")
 public interface PetMapper {
+
   @Mapping(source = "owner.id", target = "ownerId")
   @Mapping(source = "petStatus", target = "status")
   PetDTO toDto(PetEntity petEntity);
@@ -20,6 +21,7 @@ public interface PetMapper {
   @Mapping(target = "createdAt", ignore = true)
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "updatedAt", ignore = true)
+  @Mapping(target = "imageUrls", ignore = true)
   PetEntity toEntity(PetCreateDTO petCreateDTO);
 
   List<PetDTO> toDtoList(List<PetEntity> petList);

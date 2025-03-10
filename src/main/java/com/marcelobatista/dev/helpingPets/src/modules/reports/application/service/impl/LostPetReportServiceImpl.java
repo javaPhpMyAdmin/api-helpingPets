@@ -1,6 +1,7 @@
 package com.marcelobatista.dev.helpingPets.src.modules.reports.application.service.impl;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -10,7 +11,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.marcelobatista.dev.helpingPets.src.modules.reports.application.service.LostPetReportService;
 import com.marcelobatista.dev.helpingPets.src.modules.reports.domain.LostPetReport;
@@ -21,7 +21,7 @@ import com.marcelobatista.dev.helpingPets.src.modules.reports.infrastructure.Los
 import com.marcelobatista.dev.helpingPets.src.modules.reports.mapper.LostPetReportMapper;
 import com.marcelobatista.dev.helpingPets.src.modules.users.domain.User;
 import com.marcelobatista.dev.helpingPets.src.security.infrastructure.SecurityUtil;
-import com.marcelobatista.dev.helpingPets.src.shared.ImageService.ImageService;
+import com.marcelobatista.dev.helpingPets.src.shared.ImageService.UploadImage;
 import com.marcelobatista.dev.helpingPets.src.shared.enums.ReportStatus;
 import com.marcelobatista.dev.helpingPets.src.shared.enums.ReportType;
 import com.marcelobatista.dev.helpingPets.src.shared.exceptions.ApiException;
@@ -35,7 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 public class LostPetReportServiceImpl implements LostPetReportService {
   private final LostPetReportRepository lostPetReportRepository;
   private final LostPetReportMapper lostPetReportMapper;
-  private final ImageService imageService;
+  private final UploadImage uploadImage;
 
   @Override
   @Transactional
@@ -53,25 +53,21 @@ public class LostPetReportServiceImpl implements LostPetReportService {
     // Subir las imágenes a Cloudinary y obtener sus URLs
     if (createLostPetReportDTO.getImageUrls() != null && !createLostPetReportDTO.getImageUrls().isEmpty()) {
       List<String> imageUrls = createLostPetReportDTO.getImageUrls().stream()
-          .map(this::uploadImageToCloudinary)
+          .map(t -> {
+            try {
+              return uploadImage.uploadImageToCloudinary(t, ReportType.LOST);
+            } catch (IOException e) {
+              throw new UncheckedIOException("Failed to upload image to Cloudinary", e);
+            }
+          })
           .collect(Collectors.toList());
       lostPetReport.setImageUrls(imageUrls);
     }
 
     return lostPetReportMapper.toDto(
         Optional.of(lostPetReportRepository.save(lostPetReport))
-            .orElseThrow(() -> ApiException.builder().status(500).message("Failed to save lostPetReport").build()));
-  }
-
-  // Método para subir una imagen a Cloudinary
-  private String uploadImageToCloudinary(MultipartFile image) {
-    try {
-      // Subir la imagen a Cloudinary y obtener la URL segura
-      return imageService.uploadImage(image);
-    } catch (IOException e) {
-      throw ApiException.builder().status(HttpStatus.INTERNAL_SERVER_ERROR.value())
-          .message("Failed to upload image to Cloudinary: " + e.getMessage()).build();
-    }
+            .orElseThrow(() -> ApiException.builder().status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .message("Failed to save lostPetReport").build()));
   }
 
   @Override

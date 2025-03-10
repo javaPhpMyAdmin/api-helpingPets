@@ -2,7 +2,6 @@ package com.marcelobatista.dev.helpingPets.src.modules.chat.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
 
 import com.marcelobatista.dev.helpingPets.src.modules.chat.domain.ConversationEntity;
 import com.marcelobatista.dev.helpingPets.src.modules.chat.dto.ConversationDTO;
@@ -10,7 +9,7 @@ import com.marcelobatista.dev.helpingPets.src.modules.chat.dto.ConversationDTO;
 @Mapper(componentModel = "spring", uses = ChatMessageMapper.class)
 public interface ConversationMapper {
 
-  ConversationMapper INSTANCE = Mappers.getMapper(ConversationMapper.class);
+  // ConversationMapper INSTANCE = Mappers.getMapper(ConversationMapper.class);
 
   @Mapping(source = "sender.id", target = "senderId")
   @Mapping(source = "receiver.id", target = "receiverId")

@@ -1,5 +1,7 @@
 package com.marcelobatista.dev.helpingPets.src.modules.chat.dto;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,5 +17,5 @@ public class ConversationDTO {
   Long conversationId;
   Long senderId;
   Long receiverId;
-  // List<ChatMessageDTO> messages;
+  List<ChatMessageDTO> messages;
 }

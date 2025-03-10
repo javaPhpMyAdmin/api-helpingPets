@@ -8,6 +8,7 @@ import io.github.cdimascio.dotenv.Dotenv;
 
 @SpringBootTest
 class HelpingPetsApplicationTests {
+  @SuppressWarnings("unused")
   @BeforeAll
   public static void setup() {
     // Cargar las variables de entorno para los tests

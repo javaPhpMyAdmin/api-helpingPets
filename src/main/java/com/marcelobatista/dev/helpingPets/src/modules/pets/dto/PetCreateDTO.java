@@ -2,6 +2,8 @@ package com.marcelobatista.dev.helpingPets.src.modules.pets.dto;
 
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
@@ -28,7 +30,7 @@ public class PetCreateDTO {
 
   @NotEmpty(message = "At least one image is required")
   @Size(min = 1, message = "At least one image URL must be provided")
-  private List<@NotBlank(message = "Image URL cannot be empty") String> imageUrls;
+  private List<MultipartFile> imageUrls;
 
   @NotBlank(message = "Status cannot be empty")
   private String status;

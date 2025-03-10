@@ -18,6 +18,8 @@ public interface FoundPetReportMapper {
 
   @Mapping(target = "status", source = "foundPetStatus")
   @Mapping(target = "reporter.id", ignore = true)
+  @Mapping(target = "reportType", ignore = true)
+  @Mapping(target = "imageUrl", ignore = true)
   FoundPetReport toEntity(CreateFoundPetReportDTO dto);
 
   List<FoundPetReportDTO> toDtoList(List<FoundPetReport> entities);

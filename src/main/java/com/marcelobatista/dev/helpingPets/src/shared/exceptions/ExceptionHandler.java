@@ -1,5 +1,7 @@
 package com.marcelobatista.dev.helpingPets.src.shared.exceptions;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -71,7 +73,6 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
   }
 
   @org.springframework.web.bind.annotation.ExceptionHandler(BadCredentialsException.class)
-
   public ResponseEntity<CustomErrorResponse> handleException(BadCredentialsException e, HttpServletRequest request) {
     log.info("Handling BadCredentialsException: {}", e.getMessage());
     CustomErrorResponse response = new CustomErrorResponse(
@@ -127,6 +128,38 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
         Map.of());
     return new ResponseEntity<CustomErrorResponse>(response,
         HttpStatus.BAD_REQUEST);
+  }
+
+  @org.springframework.web.bind.annotation.ExceptionHandler(IOException.class)
+  public ResponseEntity<CustomErrorResponse> handleIOException(IOException e, HttpServletRequest request) {
+    log.error("Handling IOException: {}", e);
+    CustomErrorResponse response = new CustomErrorResponse(
+        Instant.now().toString(),
+        HttpStatus.BAD_GATEWAY.value(),
+        request.getRequestURI(),
+        HttpStatus.valueOf(HttpStatus.BAD_GATEWAY.value()),
+        e.getMessage(),
+        e.getClass().getSimpleName(),
+        Map.of());
+
+    return new ResponseEntity<CustomErrorResponse>(response,
+        HttpStatus.BAD_GATEWAY);
+  }
+
+  @org.springframework.web.bind.annotation.ExceptionHandler(UncheckedIOException.class)
+  public ResponseEntity<CustomErrorResponse> handleIOException(UncheckedIOException e, HttpServletRequest request) {
+    log.error("Handling UncheckedIOException: {}", e);
+    CustomErrorResponse response = new CustomErrorResponse(
+        Instant.now().toString(),
+        HttpStatus.BAD_GATEWAY.value(),
+        request.getRequestURI(),
+        HttpStatus.valueOf(HttpStatus.BAD_GATEWAY.value()),
+        e.getMessage(),
+        e.getClass().getSimpleName(),
+        Map.of());
+
+    return new ResponseEntity<CustomErrorResponse>(response,
+        HttpStatus.BAD_GATEWAY);
   }
 
 }
