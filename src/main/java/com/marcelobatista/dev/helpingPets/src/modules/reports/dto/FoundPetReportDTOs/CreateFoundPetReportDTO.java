@@ -12,29 +12,24 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter
-@Setter
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class CreateFoundPetReportDTO {
-  @NotBlank(message = "Title is required")
-  private String title;
+public record CreateFoundPetReportDTO(String title,
 
-  @NotEmpty(message = "At least one image is required")
-  private MultipartFile imageUrl;
+    ImageDTO imageDTO,
 
-  @NotBlank(message = "Description is required")
-  @Size(max = 500, message = "Description cannot be longer than 500 characters")
-  private String description;
+    // @NotBlank(message = "Description is required")
+    // @Size(max = 500, message = "Description cannot be longer than 500
+    // characters")
+    // private String description;
 
-  @NotNull(message = "Latitude is required")
-  private Double latitude;
+    // @NotNull(message = "Latitude is required")
+    // private Double latitude;
 
-  @NotNull(message = "Latitude is required")
-  private Double longitude;
+    // @NotNull(message = "Latitude is required")
+    // private Double longitude;
 
-  @NotBlank(message = "Status is required")
-  private String foundPetStatus;
+    LocationDTO location,
 
+    String foundPetStatus
+
+) {
 }

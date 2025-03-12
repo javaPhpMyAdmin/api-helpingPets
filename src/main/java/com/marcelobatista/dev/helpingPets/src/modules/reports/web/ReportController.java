@@ -19,12 +19,17 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.marcelobatista.dev.helpingPets.src.modules.reports.application.service.FoundPetReportService;
 import com.marcelobatista.dev.helpingPets.src.modules.reports.application.service.LostPetReportService;
 import com.marcelobatista.dev.helpingPets.src.modules.reports.application.service.PetReportService;
+import com.marcelobatista.dev.helpingPets.src.modules.reports.dto.FoundPetReportDTOs.CoordinatesDTO;
 import com.marcelobatista.dev.helpingPets.src.modules.reports.dto.FoundPetReportDTOs.CreateFoundPetReportDTO;
+import com.marcelobatista.dev.helpingPets.src.modules.reports.dto.FoundPetReportDTOs.ImageDTO;
+import com.marcelobatista.dev.helpingPets.src.modules.reports.dto.FoundPetReportDTOs.LocationDTO;
 import com.marcelobatista.dev.helpingPets.src.modules.reports.dto.FoundPetReportDTOs.UpdateFoundPetReportDTO;
 import com.marcelobatista.dev.helpingPets.src.modules.reports.dto.LostPetReportDTOs.CreateLostPetReportDTO;
+import com.marcelobatista.dev.helpingPets.src.modules.reports.dto.LostPetReportDTOs.LostImageDTO;
 import com.marcelobatista.dev.helpingPets.src.modules.reports.dto.LostPetReportDTOs.UpdateLostPetReportDTO;
 import com.marcelobatista.dev.helpingPets.src.shared.Response.GlobalResponse;
 import com.marcelobatista.dev.helpingPets.src.shared.utils.RequestUtils;
@@ -120,20 +125,31 @@ public class ReportController {
   public ResponseEntity<?> createFoundPetReport(
       @RequestParam("title") String title,
       @RequestParam("description") String description,
-      @RequestParam("latitude") Double latitude,
-      @RequestParam("longitude") Double longitude,
+      @RequestParam("coordinatesDTO") CoordinatesDTO coords,
       @RequestParam("foundPetStatus") String foundPetStatus,
       @RequestParam("imageUrl") MultipartFile imageUrl,
       HttpServletRequest request) {
 
-    CreateFoundPetReportDTO createFoundPetReportDTO = CreateFoundPetReportDTO.builder()
-        .title(title)
-        .imageUrl(imageUrl)
-        .description(description)
-        .latitude(latitude)
-        .longitude(longitude)
-        .foundPetStatus(foundPetStatus)
-        .build();
+    ImageDTO imageDto = new ImageDTO(imageUrl, description);
+    // CoordinatesDTO coordinatesDTO = new
+    // CoordinatesDTO(coordinatesDto.getLatitude(), coordinatesDto.getLongitude());
+    LocationDTO location = new LocationDTO(coords);
+
+    CreateFoundPetReportDTO createFoundPetReportDTO = new CreateFoundPetReportDTO(
+        title,
+        imageDto,
+        location,
+        foundPetStatus);
+
+    // CreateFoundPetReportDTO createFoundPetReportDTO =
+    // CreateFoundPetReportDTO.builder()
+    // .title(title)
+    // .imageUrl(imageUrl)
+    // .description(description)
+    // .latitude(location.getCoordinatesDTO().getLatitude())
+    // .longitude(location.getCoordinatesDTO().getLongitude())
+    // .foundPetStatus(foundPetStatus)
+    // .build();
     return ResponseEntity.ok()
         .body(requestUtils.getResponse(request, Map.of("Result",
             foundPetService.createReport(createFoundPetReportDTO)),

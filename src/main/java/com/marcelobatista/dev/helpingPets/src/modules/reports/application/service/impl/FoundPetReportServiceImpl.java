@@ -45,11 +45,13 @@ public class FoundPetReportServiceImpl implements FoundPetReportService {
     foundPetReport.setReportType(ReportType.FOUND);
 
     // Subir las imágenes a Cloudinary y obtener sus URLs
-    if (createFoundPetReportDTO.getImageUrl() != null && !createFoundPetReportDTO.getImageUrl().isEmpty()) {
+    if (createFoundPetReportDTO.imageDTO().getImageUrl() != null
+        && !createFoundPetReportDTO.imageDTO().getImageUrl().isEmpty()) {
 
       String imageUrl = "";
       try {
-        imageUrl = uploadImage.uploadImageToCloudinary(createFoundPetReportDTO.getImageUrl(), ReportType.FOUND);
+        imageUrl = uploadImage.uploadImageToCloudinary(createFoundPetReportDTO.imageDTO().getImageUrl(),
+            ReportType.FOUND);
       } catch (IOException e) {
         throw new UncheckedIOException("Failed to upload image to Cloudinary", e);
       }
