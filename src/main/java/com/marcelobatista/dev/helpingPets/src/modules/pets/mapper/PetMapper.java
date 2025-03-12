@@ -2,6 +2,7 @@ package com.marcelobatista.dev.helpingPets.src.modules.pets.mapper;
 
 import java.util.List;
 
+import org.mapstruct.Builder;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -9,7 +10,7 @@ import com.marcelobatista.dev.helpingPets.src.modules.pets.domain.PetEntity;
 import com.marcelobatista.dev.helpingPets.src.modules.pets.dto.PetCreateDTO;
 import com.marcelobatista.dev.helpingPets.src.modules.pets.dto.PetDTO;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", builder = @Builder(disableBuilder = true))
 public interface PetMapper {
 
   @Mapping(source = "owner.id", target = "ownerId")

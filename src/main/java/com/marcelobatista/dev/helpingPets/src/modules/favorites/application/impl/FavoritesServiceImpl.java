@@ -1,6 +1,7 @@
 package com.marcelobatista.dev.helpingPets.src.modules.favorites.application.impl;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -62,6 +63,16 @@ public class FavoritesServiceImpl implements FavoritesService {
   @Override
   @Transactional(readOnly = true)
   public List<PetDTO> getUserFavorites(Long userId) {
+    Objects.requireNonNull(userId, "UserId must not be null");
+
+    User currentUser = Optional.ofNullable(SecurityUtil.getAuthenticatedUser()).orElseThrow(
+        () -> ApiException.builder().status(HttpStatus.UNAUTHORIZED.value()).message("User not authenticated").build());
+
+    if (userId != currentUser.getId()) {
+      throw ApiException.builder().status(HttpStatus.FORBIDDEN.value()).message("User not allowed to add favorite")
+          .build();
+    }
+
     return favoriteRepository.findByUserId(userId).stream()
         .map(fav -> petMapper.toDto(fav.getPet()))
         .collect(Collectors.toList());
