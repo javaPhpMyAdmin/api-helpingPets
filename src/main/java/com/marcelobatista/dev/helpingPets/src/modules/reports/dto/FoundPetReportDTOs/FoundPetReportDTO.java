@@ -1,10 +1,6 @@
 package com.marcelobatista.dev.helpingPets.src.modules.reports.dto.FoundPetReportDTOs;
 
 import com.marcelobatista.dev.helpingPets.src.shared.enums.ReportType;
-import com.marcelobatista.dev.helpingPets.src.modules.reports.dto.ImageDTO;
-import com.marcelobatista.dev.helpingPets.src.modules.reports.dto.LocationDTO;
-import com.marcelobatista.dev.helpingPets.src.modules.reports.dto.MetadataDTO;
-import com.marcelobatista.dev.helpingPets.src.modules.reports.dto.ReporterDTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -37,7 +33,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Builder
 public class FoundPetReportDTO {
-  private Long id;
+  private Long reportId;
   private ReportType reportType;
   private ReporterDTO reporter;
   private ImageDTO image;

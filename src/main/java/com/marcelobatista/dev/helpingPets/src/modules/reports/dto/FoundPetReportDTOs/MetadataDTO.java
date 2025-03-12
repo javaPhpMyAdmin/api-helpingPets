@@ -1,4 +1,4 @@
-package com.marcelobatista.dev.helpingPets.src.modules.reports.dto;
+package com.marcelobatista.dev.helpingPets.src.modules.reports.dto.FoundPetReportDTOs;
 
 import java.time.LocalDateTime;
 

@@ -1,4 +1,4 @@
-package com.marcelobatista.dev.helpingPets.src.modules.reports.dto;
+package com.marcelobatista.dev.helpingPets.src.modules.reports.dto.FoundPetReportDTOs;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,7 +11,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class CoordinatesDTO {
-  private Double latitude;
-  private Double Longitude;
+public class LocationDTO {
+  private CoordinatesDTO coordinatesDTO;
 }

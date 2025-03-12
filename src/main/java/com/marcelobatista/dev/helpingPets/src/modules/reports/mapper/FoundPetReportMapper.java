@@ -1,11 +1,5 @@
 package com.marcelobatista.dev.helpingPets.src.modules.reports.mapper;
 
-import com.marcelobatista.dev.helpingPets.src.modules.reports.dto.ReporterDTO;
-import com.marcelobatista.dev.helpingPets.src.modules.reports.dto.ImageDTO;
-import com.marcelobatista.dev.helpingPets.src.modules.reports.dto.LocationDTO;
-import com.marcelobatista.dev.helpingPets.src.modules.reports.dto.CoordinatesDTO;
-import com.marcelobatista.dev.helpingPets.src.modules.reports.dto.MetadataDTO;
-
 import java.util.List;
 
 import org.mapstruct.Builder;
@@ -14,8 +8,13 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 
 import com.marcelobatista.dev.helpingPets.src.modules.reports.domain.FoundPetReport;
+import com.marcelobatista.dev.helpingPets.src.modules.reports.dto.FoundPetReportDTOs.CoordinatesDTO;
 import com.marcelobatista.dev.helpingPets.src.modules.reports.dto.FoundPetReportDTOs.CreateFoundPetReportDTO;
 import com.marcelobatista.dev.helpingPets.src.modules.reports.dto.FoundPetReportDTOs.FoundPetReportDTO;
+import com.marcelobatista.dev.helpingPets.src.modules.reports.dto.FoundPetReportDTOs.ImageDTO;
+import com.marcelobatista.dev.helpingPets.src.modules.reports.dto.FoundPetReportDTOs.LocationDTO;
+import com.marcelobatista.dev.helpingPets.src.modules.reports.dto.FoundPetReportDTOs.MetadataDTO;
+import com.marcelobatista.dev.helpingPets.src.modules.reports.dto.FoundPetReportDTOs.ReporterDTO;
 import com.marcelobatista.dev.helpingPets.src.modules.users.domain.User;
 
 @Mapper(componentModel = "spring", builder = @Builder(disableBuilder = true))
@@ -25,6 +24,7 @@ public interface FoundPetReportMapper {
   @Mapping(target = "image", source = "entity", qualifiedByName = "convertImage")
   @Mapping(target = "location", source = "entity", qualifiedByName = "convertLocation")
   @Mapping(target = "metadata", source = "entity", qualifiedByName = "convertMetadata")
+  @Mapping(target = "reportId", source = "id")
   FoundPetReportDTO toDto(FoundPetReport entity);
 
   @Mapping(target = "status", source = "foundPetStatus")
