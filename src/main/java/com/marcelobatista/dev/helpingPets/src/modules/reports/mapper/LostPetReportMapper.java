@@ -7,11 +7,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.springframework.data.domain.Page;
 
-import com.marcelobatista.dev.helpingPets.src.modules.pets.dto.PetDTO;
 import com.marcelobatista.dev.helpingPets.src.modules.reports.domain.LostPetReport;
-import com.marcelobatista.dev.helpingPets.src.modules.reports.dto.FoundPetReportDTOs.ImageDTO;
-import com.marcelobatista.dev.helpingPets.src.modules.reports.dto.FoundPetReportDTOs.MetadataDTO;
-import com.marcelobatista.dev.helpingPets.src.modules.reports.dto.FoundPetReportDTOs.ReporterDTO;
 import com.marcelobatista.dev.helpingPets.src.modules.reports.dto.LostPetReportDTOs.CreateLostPetReportDTO;
 import com.marcelobatista.dev.helpingPets.src.modules.reports.dto.LostPetReportDTOs.LostImageDTO;
 import com.marcelobatista.dev.helpingPets.src.modules.reports.dto.LostPetReportDTOs.LostMetadataDTO;

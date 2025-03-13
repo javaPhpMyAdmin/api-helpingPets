@@ -73,7 +73,7 @@ public class LostPetReportServiceImpl implements LostPetReportService {
   @Override
   @Transactional(readOnly = true)
   public Page<LostPetReportDTO> getAllReports(Pageable pageable) {
-    Page<LostPetReport> reports = lostPetReportRepository.findAll(pageable);
+    Page<LostPetReport> reports = lostPetReportRepository.findAllByOrderByReportedAtDesc(pageable);
     return reports.map(lostPetReportMapper::toDto);
   }
 

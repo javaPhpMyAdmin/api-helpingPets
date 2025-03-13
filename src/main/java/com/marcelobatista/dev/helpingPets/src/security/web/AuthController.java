@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.marcelobatista.dev.helpingPets.src.security.application.service.AuthService;
 import com.marcelobatista.dev.helpingPets.src.security.dto.LoginRequestDTO;
-import com.marcelobatista.dev.helpingPets.src.security.infrastructure.SecurityUtil;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;

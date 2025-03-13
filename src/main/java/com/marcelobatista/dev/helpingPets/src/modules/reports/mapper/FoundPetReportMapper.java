@@ -21,22 +21,26 @@ import com.marcelobatista.dev.helpingPets.src.modules.users.domain.User;
 public interface FoundPetReportMapper {
 
   @Mapping(target = "reporter", source = "entity.reporter", qualifiedByName = "convertReporter")
-  @Mapping(target = "image", source = "entity", qualifiedByName = "convertImage")
+  @Mapping(target = "image.imageUrl", source = "imageUrl")
+  @Mapping(target = "image.description", source = "description")
   @Mapping(target = "location", source = "entity", qualifiedByName = "convertLocation")
   @Mapping(target = "metadata", source = "entity", qualifiedByName = "convertMetadata")
   @Mapping(target = "reportId", source = "id")
+  @Mapping(target = "title", source = "title")
   FoundPetReportDTO toDto(FoundPetReport entity);
 
   @Mapping(target = "status", source = "foundPetStatus")
   @Mapping(target = "reporter.id", ignore = true)
   @Mapping(target = "reportType", ignore = true)
   @Mapping(target = "imageUrl", ignore = true)
+  @Mapping(target = "latitude", source = "location.coordinatesDTO.latitude")
+  @Mapping(target = "longitude", source = "location.coordinatesDTO.longitude")
+  @Mapping(target = "description", ignore = true)
   FoundPetReport toEntity(CreateFoundPetReportDTO dto);
 
   List<FoundPetReportDTO> toDtoList(List<FoundPetReport> entities);
 
   // Métodos de ayuda
-
   @Named("convertReporter")
   default ReporterDTO convertReporter(User reporter) {
     return new ReporterDTO(reporter.getId());

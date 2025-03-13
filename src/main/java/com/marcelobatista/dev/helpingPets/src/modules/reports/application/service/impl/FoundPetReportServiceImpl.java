@@ -41,16 +41,17 @@ public class FoundPetReportServiceImpl implements FoundPetReportService {
 
     FoundPetReport foundPetReport = foundPetReportMapper.toEntity(createFoundPetReportDTO);
     foundPetReport.setReporter(currentUser);
+    foundPetReport.setDescription(createFoundPetReportDTO.imageDTO().description());
     foundPetReport.setStatus(ReportStatus.OPEN);
     foundPetReport.setReportType(ReportType.FOUND);
 
     // Subir las imágenes a Cloudinary y obtener sus URLs
-    if (createFoundPetReportDTO.imageDTO().getImageUrl() != null
-        && !createFoundPetReportDTO.imageDTO().getImageUrl().isEmpty()) {
+    if (createFoundPetReportDTO.imageDTO().image() != null
+        && !createFoundPetReportDTO.imageDTO().image().isEmpty()) {
 
       String imageUrl = "";
       try {
-        imageUrl = uploadImage.uploadImageToCloudinary(createFoundPetReportDTO.imageDTO().getImageUrl(),
+        imageUrl = uploadImage.uploadImageToCloudinary(createFoundPetReportDTO.imageDTO().image(),
             ReportType.FOUND);
       } catch (IOException e) {
         throw new UncheckedIOException("Failed to upload image to Cloudinary", e);
@@ -68,8 +69,7 @@ public class FoundPetReportServiceImpl implements FoundPetReportService {
   @Override
   @Transactional(readOnly = true)
   public Page<FoundPetReportDTO> getAllReports(Pageable pageable) {
-    Page<FoundPetReport> reports = foundPetRepository.findAll(pageable);
-
+    Page<FoundPetReport> reports = foundPetRepository.findAllByOrderByCreatedAtDesc(pageable);
     return reports.map(foundPetReportMapper::toDto);
   }
 

@@ -34,6 +34,7 @@ import lombok.Setter;
 @Builder
 public class FoundPetReportDTO {
   private Long reportId;
+  private String title;
   private ReportType reportType;
   private ReporterDTO reporter;
   private ImageDTO image;

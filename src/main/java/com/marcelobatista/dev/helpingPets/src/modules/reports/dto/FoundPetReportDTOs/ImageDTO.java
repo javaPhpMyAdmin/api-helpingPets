@@ -1,7 +1,5 @@
 package com.marcelobatista.dev.helpingPets.src.modules.reports.dto.FoundPetReportDTOs;
 
-import org.springframework.web.multipart.MultipartFile;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,6 +12,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @Builder
 public class ImageDTO {
-  private MultipartFile imageUrl;
+  private String imageUrl;
   private String description;
 }
