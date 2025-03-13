@@ -73,6 +73,9 @@ public class LostPetReportServiceImpl implements LostPetReportService {
   @Override
   @Transactional(readOnly = true)
   public Page<LostPetReportDTO> getAllReports(Pageable pageable) {
+    if (pageable == null) {
+      throw new IllegalArgumentException("Pageable parameter cannot be null");
+    }
     Page<LostPetReport> reports = lostPetReportRepository.findAllByOrderByReportedAtDesc(pageable);
     return reports.map(lostPetReportMapper::toDto);
   }
