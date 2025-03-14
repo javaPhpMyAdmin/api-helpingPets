@@ -49,10 +49,11 @@ public class SecurityConfiguration {
     httpSecurity
         .authorizeHttpRequests(
             authorize -> {
-              authorize. .antMatchers("/auth/login", "/auth/ping").permitAll();
               authorize.requestMatchers(SecurityEndpoints.PUBLIC_ENDPOINTS.toArray(new String[0])).permitAll();
               authorize.requestMatchers(org.springframework.http.HttpMethod.OPTIONS,
                   "/**").permitAll();
+              authorize.requestMatchers(SecurityEndpoints.PUBLIC_ENDPOINTS.toArray(String[]::new)).permitAll();
+              authorize.requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll();
 
               applyMethodBasedAuthorization(authorize,
                   SecurityEndpoints.USER_PROTECTED_ENDPOINTS, "USER");
@@ -72,6 +73,9 @@ public class SecurityConfiguration {
         LogoutFilter.class);
     httpSecurity
         .exceptionHandling(ex -> ex.authenticationEntryPoint(new CustomAuthenticationEntryPoint()));
+    // httpSecurity
+    // .exceptionHandling(ex -> ex.authenticationEntryPoint(new
+    // CustomAuthenticationEntryPoint()));
 
     return httpSecurity.build();
   }
@@ -95,49 +99,81 @@ public class SecurityConfiguration {
       response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401 Unauthorized
       response.getWriter().write("{\"error\": \"No autorizado. Debes iniciar sesión.\"}");
     }
+  }
 
-    @Bean
-    public AuthenticationManager authenticationManager() {
-      DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
-      daoAuthenticationProvider.setUserDetailsService(userDetailsService);
-      daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
-      return new ProviderManager(daoAuthenticationProvider);
-    }
+  @Bean
+  public AuthenticationManager authenticationManager() {
+    DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
+    daoAuthenticationProvider.setUserDetailsService(userDetailsService);
+    daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
+    return new ProviderManager(daoAuthenticationProvider);
+  }
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-      return new BCryptPasswordEncoder();
-    }
+  @Bean
+  public PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
+  }
 
-    // @Bean
-    // public CorsFilter corsFilter() {
-    // UrlBasedCorsConfigurationSource source = new
-    // UrlBasedCorsConfigurationSource();
-    // CorsConfiguration config = new CorsConfiguration();
+  // @Bean
+  // public CorsConfigurationSource configurationSource() {
+  // CorsConfiguration configurarion = new CorsConfiguration();
+  // configurarion.setAllowedOrigins(
+  // List.of("http://localhost:5173", "http://localhost:5173",
+  // "http://127.0.0.0:5173", "http://127.0.0.0:5173"));
+  // configurarion.setExposedHeaders(List.of("Authorization"));
+  // configurarion.setAllowCredentials(true);
+  // configurarion.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE",
+  // "OPTIONS"));
+  // configurarion.setAllowedHeaders(List.of("Authorization", "Content-type",
+  // "Acept", "Origin"));
+  // UrlBasedCorsConfigurationSource source = new
+  // UrlBasedCorsConfigurationSource();
+  // source.registerCorsConfiguration("/**", configurarion);
+  // return source;
+  // }
 
-    // // config.setAllowedOrigins(List.of("http://localhost:5173",
-    // // "http://localhost:8081",
-    // // "exp://192.168.79.165:8081",
-    // // "exp://192.168.79.165",
-    // // "http://192.168.79.165",
-    // // "http://192.168.79.165:8081",
-    // // "http://192.168.79.165:8081/_expo/loading?platform=ios",
-    // // "http://192.168.79.165:8081/_expo/loading"));
-    // config.setAllowedOriginPatterns(List.of(
-    // "http://localhost:*", // Permitir cualquier puerto en localhost
-    // "http://127.0.0.1:*", // Otra forma de localhost
-    // "http://192.168.*.*", // Permitir cualquier IP en la red local
-    // "exp://*", // Permitir Expo en cualquier IP
-    // "http://*.expo.dev"));
-    // config.setAllowCredentials(true);
-    // config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-    // // Incluir OPTIONS
-    // config.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept",
-    // "Origin"));
-    // config.setExposedHeaders(List.of("Authorization"));
-    // log.info("CORS Configuration: {}", config.getAllowedOrigins());
-    // source.registerCorsConfiguration("/**", config);
-    // return new CorsFilter(source);
-    // }
+  // @Bean
+  // public CorsFilter corsFilter() {
+  // UrlBasedCorsConfigurationSource source = new
+  // UrlBasedCorsConfigurationSource();
+  // CorsConfiguration config = new CorsConfiguration();
+
+  // // config.setAllowedOrigins(List.of("http://localhost:5173",
+  // // "http://localhost:8081",
+  // // "exp://192.168.79.165:8081",
+  // // "exp://192.168.79.165",
+  // // "http://192.168.79.165",
+  // // "http://192.168.79.165:8081",
+  // // "http://192.168.79.165:8081/_expo/loading?platform=ios",
+  // // "http://192.168.79.165:8081/_expo/loading"));
+  // config.setAllowedOriginPatterns(List.of(
+  // "http://localhost:*", // Permitir cualquier puerto en localhost
+  // "http://127.0.0.1:*", // Otra forma de localhost
+  // "http://192.168.*.*", // Permitir cualquier IP en la red local
+  // "exp://*", // Permitir Expo en cualquier IP
+  // "http://*.expo.dev"));
+  // config.setAllowCredentials(true);
+  // config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+  // // Incluir OPTIONS
+  // config.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept",
+  // "Origin"));
+  // config.setExposedHeaders(List.of("Authorization"));
+  // log.info("CORS Configuration: {}", config.getAllowedOrigins());
+  // source.registerCorsConfiguration("/**", config);
+  // return new CorsFilter(source);
+  // }
+  @Bean
+  public CorsFilter corsFilter() {
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    CorsConfiguration config = new CorsConfiguration();
+
+    config.setAllowedOrigins(List.of("http://localhost:5173")); // Asegurar origen correcto
+    config.setAllowCredentials(true);
+    config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE")); // Incluir OPTIONS
+    config.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept", "Origin"));
+    config.setExposedHeaders(List.of("Authorization"));
+
+    source.registerCorsConfiguration("/**", config);
+    return new CorsFilter(source);
   }
 }
