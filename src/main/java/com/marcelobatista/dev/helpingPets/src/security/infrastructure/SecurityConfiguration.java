@@ -24,6 +24,7 @@ import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 import com.marcelobatista.dev.helpingPets.src.config.security.SecurityEndpoints;
 import com.marcelobatista.dev.helpingPets.src.security.application.service.UserDetailsServiceImpl;
@@ -49,6 +50,7 @@ public class SecurityConfiguration {
         .authorizeHttpRequests(
             authorize -> {
               authorize.requestMatchers(SecurityEndpoints.PUBLIC_ENDPOINTS.toArray(String[]::new)).permitAll();
+              authorize.requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll();
 
               applyMethodBasedAuthorization(authorize,
                   SecurityEndpoints.USER_PROTECTED_ENDPOINTS, "USER");
@@ -63,7 +65,6 @@ public class SecurityConfiguration {
     });
     httpSecurity.addFilterBefore(new UsernamePasswordAuthenticationFilter(),
         LogoutFilter.class);
-
     // httpSecurity
     // .exceptionHandling(ex -> ex.authenticationEntryPoint(new
     // CustomAuthenticationEntryPoint()));
@@ -103,15 +104,36 @@ public class SecurityConfiguration {
     return new BCryptPasswordEncoder();
   }
 
-  @Bean
-  public CorsConfigurationSource configurationSource() {
-    CorsConfiguration configurarion = new CorsConfiguration();
-    configurarion.setAllowedOrigins(List.of("http://localhost:5173"));
-    configurarion.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
-    configurarion.setAllowedHeaders(List.of("Authorization", "Content-type"));
+  // @Bean
+  // public CorsConfigurationSource configurationSource() {
+  // CorsConfiguration configurarion = new CorsConfiguration();
+  // configurarion.setAllowedOrigins(
+  // List.of("http://localhost:5173", "http://localhost:5173",
+  // "http://127.0.0.0:5173", "http://127.0.0.0:5173"));
+  // configurarion.setExposedHeaders(List.of("Authorization"));
+  // configurarion.setAllowCredentials(true);
+  // configurarion.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE",
+  // "OPTIONS"));
+  // configurarion.setAllowedHeaders(List.of("Authorization", "Content-type",
+  // "Acept", "Origin"));
+  // UrlBasedCorsConfigurationSource source = new
+  // UrlBasedCorsConfigurationSource();
+  // source.registerCorsConfiguration("/**", configurarion);
+  // return source;
+  // }
 
+  @Bean
+  public CorsFilter corsFilter() {
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-    source.registerCorsConfiguration("/**", configurarion);
-    return source;
+    CorsConfiguration config = new CorsConfiguration();
+
+    config.setAllowedOrigins(List.of("http://localhost:5173")); // Asegurar origen correcto
+    config.setAllowCredentials(true);
+    config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE")); // Incluir OPTIONS
+    config.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept", "Origin"));
+    config.setExposedHeaders(List.of("Authorization"));
+
+    source.registerCorsConfiguration("/**", config);
+    return new CorsFilter(source);
   }
 }

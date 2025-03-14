@@ -63,4 +63,9 @@ public class AuthController {
     return "LOGIN SUCCESS";
   }
 
+  @GetMapping("/ping")
+  public ResponseEntity<?> testConection() {
+    return ResponseEntity.ok().body(Map.of("Message", "Server Running"));
+  }
+
 }

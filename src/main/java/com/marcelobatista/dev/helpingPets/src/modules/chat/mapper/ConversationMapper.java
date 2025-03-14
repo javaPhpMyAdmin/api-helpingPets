@@ -8,9 +8,6 @@ import com.marcelobatista.dev.helpingPets.src.modules.chat.dto.ConversationDTO;
 
 @Mapper(componentModel = "spring", uses = ChatMessageMapper.class)
 public interface ConversationMapper {
-
-  // ConversationMapper INSTANCE = Mappers.getMapper(ConversationMapper.class);
-
   @Mapping(source = "sender.id", target = "senderId")
   @Mapping(source = "receiver.id", target = "receiverId")
   @Mapping(source = "conversation.id", target = "conversationId")
