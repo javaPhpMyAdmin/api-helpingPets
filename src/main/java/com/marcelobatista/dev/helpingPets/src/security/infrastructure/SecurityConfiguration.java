@@ -21,6 +21,9 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.marcelobatista.dev.helpingPets.src.config.security.SecurityEndpoints;
 import com.marcelobatista.dev.helpingPets.src.security.application.service.UserDetailsServiceImpl;
@@ -98,5 +101,17 @@ public class SecurityConfiguration {
   @Bean
   public PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
+  }
+
+  @Bean
+  public CorsConfigurationSource configurationSource() {
+    CorsConfiguration configurarion = new CorsConfiguration();
+    configurarion.setAllowedOrigins(List.of("http://localhost:5173"));
+    configurarion.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
+    configurarion.setAllowedHeaders(List.of("Authorization", "Content-type"));
+
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", configurarion);
+    return source;
   }
 }

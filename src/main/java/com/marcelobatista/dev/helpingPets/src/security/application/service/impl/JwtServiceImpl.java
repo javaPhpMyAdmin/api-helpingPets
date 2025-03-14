@@ -1,20 +1,18 @@
 package com.marcelobatista.dev.helpingPets.src.security.application.service.impl;
 
-import java.lang.reflect.Type;
 import java.time.Instant;
 import java.util.Date;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
-import java.util.Base64.Decoder;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 import javax.crypto.SecretKey;
 
-import org.springframework.data.convert.ReadingConverter;
 import org.springframework.stereotype.Service;
 
 import com.marcelobatista.dev.helpingPets.src.config.security.JwtConfig;
@@ -26,7 +24,6 @@ import com.marcelobatista.dev.helpingPets.src.security.domain.TokenData;
 import com.marcelobatista.dev.helpingPets.src.shared.enums.TokenType;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Header;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.Jwts.SIG;
@@ -41,10 +38,12 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class JwtServiceImpl extends JwtConfig implements JwtService {
 
+  private static final String BEARER = "Bearer ";
+  private static final String AUTHORIZATION = "Authorization";
+  private static final String ROLE = "ROLE";
+  private static final String AUTHORITIES = "AUTHORITIES";
   private static final String HELPING_PETS = "HELPING_PETS";
-
   private static final String JWT = "JWT";
-
   private static final String TYP = "typ";
 
   private final UserService userService;
@@ -57,7 +56,9 @@ public class JwtServiceImpl extends JwtConfig implements JwtService {
   private final Function<String, String> subject = token -> getClaimsValue(token, Claims::getSubject);
 
   private <T> T getClaimsValue(String token, Function<Claims, T> claims) {
-    return claimsFunction.andThen(claims).apply(token);
+    Claims claimsFound = claimsFunction.apply(token);
+
+    return claims.apply(claimsFound);
   }
 
   private final Supplier<JwtBuilder> builder = () -> Jwts.builder()
@@ -73,8 +74,8 @@ public class JwtServiceImpl extends JwtConfig implements JwtService {
   private final BiFunction<User, TokenType, String> buildToken = (user, type) -> Objects.equals(type, TokenType.ACCESS)
       ? builder.get()
           .subject(user.getEmail())
-          .claim("AUTHORITIES", user.getAuthorities())
-          .claim("ROLE", user.getRole())
+          .claim(AUTHORITIES, user.getAuthorities())
+          .claim(ROLE, user.getRole())
           .expiration(Date.from(Instant.now().plusSeconds(getExpirationToken())))
           .compact()
       : builder.get()
@@ -82,19 +83,35 @@ public class JwtServiceImpl extends JwtConfig implements JwtService {
           .expiration(Date.from(Instant.now().plusSeconds(getExpirationToken())))
           .compact();
 
+  private Function<HttpServletRequest, Optional<String>> extractRequest = (request) -> {
+    String authHeader = request.getHeader(AUTHORIZATION);
+    if (authHeader != null && authHeader.startsWith(BEARER)) {
+      return Optional.of(authHeader.substring(7));
+    }
+    return Optional.empty();
+  };
+
   @Override
   public String createToken(User user, Function<Token, String> tokenFunction) {
-    throw new UnsupportedOperationException("Unimplemented method 'createToken'");
+    var token = Token.builder().access(buildToken.apply(user, TokenType.ACCESS))
+        .refresh(buildToken.apply(user, TokenType.REFRESH))
+        .build();
+    return tokenFunction.apply(token);
   }
 
   @Override
   public Optional<String> extractToken(HttpServletRequest request, String tokenType) {
-    throw new UnsupportedOperationException("Unimplemented method 'extractToken'");
+    return extractRequest.apply(request);
   }
 
   @Override
   public <T> T getTokenData(String token, Function<TokenData, T> tokenFunction) {
-    throw new UnsupportedOperationException("Unimplemented method 'getTokenData'");
+    return tokenFunction.apply(TokenData.builder()
+        .valid(Objects.equals(userService.findByEmail(subject.apply(
+            token)).getEmail(), claimsFunction.apply(token).getSubject()))
+        .claims(claimsFunction.apply(token))
+        .user(userService.findByEmail(subject.apply(token)))
+        .build());
   }
 
 }

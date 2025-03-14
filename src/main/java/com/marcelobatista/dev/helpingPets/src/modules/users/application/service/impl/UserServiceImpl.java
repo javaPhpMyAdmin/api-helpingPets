@@ -90,4 +90,11 @@ public class UserServiceImpl implements UserService {
 
   }
 
+  @Override
+  public User findByEmail(String email) {
+    return userRepository.findByEmail(email)
+        .orElseThrow(
+            () -> ApiException.builder().message("User not found").status(HttpStatus.NOT_FOUND.value()).build());
+  }
+
 }
