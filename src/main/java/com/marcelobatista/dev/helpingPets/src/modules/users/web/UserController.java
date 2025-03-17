@@ -73,14 +73,14 @@ public class UserController {
             "The account was correctly verified", HttpStatus.OK));
   }
 
-  // @GetMapping("/me")
-  // public ResponseEntity<GlobalResponse> getUserInfo(
-  // HttpServletRequest request) {
-  // var user = SecurityUtil.getAuthenticatedUser();
-  // return ResponseEntity.ok()
-  // .body(requestUtils.getResponse(request, Map.of("user", user),
-  // "The user information was correctly retrieved", HttpStatus.OK));
-  // }
+  @GetMapping("/me")
+  public ResponseEntity<GlobalResponse> getUserInfo(
+      HttpServletRequest request) {
+    var user = SecurityUtil.getAuthenticatedUser();
+    return ResponseEntity.ok()
+        .body(requestUtils.getResponse(request, Map.of("user", user),
+            "The user information was correctly retrieved", HttpStatus.OK));
+  }
 
   @GetMapping("/get-all")
   public ResponseEntity<GlobalResponse> getUsers(@PathParam("token") String token, HttpServletRequest request) {
