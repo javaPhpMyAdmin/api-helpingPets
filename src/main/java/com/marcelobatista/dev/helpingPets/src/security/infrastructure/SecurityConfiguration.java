@@ -43,6 +43,7 @@ public class SecurityConfiguration {
   private final UserDetailsServiceImpl userDetailsService;
   private final JwtFilter jwtFilter;
 
+  @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity)
       throws Exception {
     httpSecurity.csrf(csrf -> csrf.disable());
