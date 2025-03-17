@@ -18,8 +18,11 @@ import com.marcelobatista.dev.helpingPets.src.modules.users.dto.UpdateUserReques
 import com.marcelobatista.dev.helpingPets.src.modules.users.dto.UserResponse;
 import com.marcelobatista.dev.helpingPets.src.modules.users.infrastructure.UserRepository;
 import com.marcelobatista.dev.helpingPets.src.modules.users.infrastructure.VerificationCodeRepository;
+import com.marcelobatista.dev.helpingPets.src.security.application.service.JwtService;
+import com.marcelobatista.dev.helpingPets.src.security.domain.Token;
 import com.marcelobatista.dev.helpingPets.src.security.infrastructure.SecurityUtil;
 import com.marcelobatista.dev.helpingPets.src.shared.enums.EventType;
+import com.marcelobatista.dev.helpingPets.src.shared.enums.TokenType;
 import com.marcelobatista.dev.helpingPets.src.shared.exceptions.ApiException;
 
 import jakarta.transaction.Transactional;
@@ -34,6 +37,7 @@ public class UserServiceImpl implements UserService {
   private final UserRepository userRepository;
   private final VerificationCodeRepository verificationCodeRepository;
   private final ApplicationEventPublisher publisher;
+  private final JwtService jwtService;
 
   @Transactional
   @Override
@@ -41,7 +45,10 @@ public class UserServiceImpl implements UserService {
     var user = new User(userRequest);
     user = userRepository.save(user);
     sendVerificationEmail(user);
-    return new UserResponse(user);
+    // Generar tokens
+    String accessToken = jwtService.createToken(user, Token::getAccess);
+    String refreshToken = jwtService.createToken(user, Token::getRefresh);
+    return new UserResponse(user, accessToken, refreshToken);
 
   }
 
@@ -68,7 +75,7 @@ public class UserServiceImpl implements UserService {
 
     currentUser.updateFromDto(userRequestDto);
 
-    return new UserResponse(currentUser);
+    return new UserResponse(currentUser, null, null);
   }
 
   @Override
@@ -86,7 +93,7 @@ public class UserServiceImpl implements UserService {
   @Transactional
   public List<UserResponse> getUsers() {
     List<User> users = userRepository.findAll();
-    return users.stream().map(user -> new UserResponse(user)).collect(Collectors.toList());
+    return users.stream().map(user -> new UserResponse(user, null, null)).collect(Collectors.toList());
 
   }
 

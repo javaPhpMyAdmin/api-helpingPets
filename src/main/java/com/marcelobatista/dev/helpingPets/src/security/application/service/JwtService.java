@@ -15,4 +15,6 @@ public interface JwtService {
   Optional<String> extractToken(HttpServletRequest request, String tokenType);
 
   <T> T getTokenData(String token, Function<TokenData, T> tokenFunction);
+
+  boolean validateToken(String token, User user);
 }

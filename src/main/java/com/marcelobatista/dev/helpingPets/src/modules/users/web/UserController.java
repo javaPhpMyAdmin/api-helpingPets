@@ -7,6 +7,8 @@ import com.marcelobatista.dev.helpingPets.src.modules.users.application.service.
 import com.marcelobatista.dev.helpingPets.src.modules.users.dto.CreateUserRequestDto;
 import com.marcelobatista.dev.helpingPets.src.modules.users.dto.UpdateUserRequestDto;
 import com.marcelobatista.dev.helpingPets.src.modules.users.dto.UserResponse;
+import com.marcelobatista.dev.helpingPets.src.modules.users.infrastructure.UserRepository;
+import com.marcelobatista.dev.helpingPets.src.security.infrastructure.SecurityUtil;
 import com.marcelobatista.dev.helpingPets.src.shared.Response.GlobalResponse;
 import com.marcelobatista.dev.helpingPets.src.shared.utils.RequestUtils;
 
@@ -70,6 +72,15 @@ public class UserController {
     return ResponseEntity.created(getUri())
         .body(requestUtils.getResponse(request, Map.of("userAccountVerified", "ACCOUNT_VERIFIED_SUCCESFULLY"),
             "The account was correctly verified", HttpStatus.OK));
+  }
+
+  @GetMapping("/me")
+  public ResponseEntity<GlobalResponse> getUserInfo(
+      HttpServletRequest request) {
+    var user = SecurityUtil.getAuthenticatedUser();
+    return ResponseEntity.ok()
+        .body(requestUtils.getResponse(request, Map.of("user", user),
+            "The user information was correctly retrieved", HttpStatus.OK));
   }
 
   @GetMapping("/get-all")

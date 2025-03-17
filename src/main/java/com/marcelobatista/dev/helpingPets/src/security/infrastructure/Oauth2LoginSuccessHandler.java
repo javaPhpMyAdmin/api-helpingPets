@@ -1,6 +1,8 @@
 package com.marcelobatista.dev.helpingPets.src.security.infrastructure;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -10,11 +12,12 @@ import org.springframework.security.oauth2.client.authentication.OAuth2Authentic
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
-import com.marcelobatista.dev.helpingPets.src.config.ApplicationProperties;
 import com.marcelobatista.dev.helpingPets.src.modules.users.domain.User;
 import com.marcelobatista.dev.helpingPets.src.modules.users.domain.UserConnectedAccount;
 import com.marcelobatista.dev.helpingPets.src.modules.users.infrastructure.ConnectedAccountRepository;
 import com.marcelobatista.dev.helpingPets.src.modules.users.infrastructure.UserRepository;
+import com.marcelobatista.dev.helpingPets.src.security.application.service.JwtService;
+import com.marcelobatista.dev.helpingPets.src.security.domain.Token;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -28,8 +31,8 @@ import lombok.extern.slf4j.Slf4j;
 public class Oauth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
   private final ConnectedAccountRepository connectedAccountRepository;
-  private final ApplicationProperties applicationProperties;
   private final UserRepository userRepository;
+  private final JwtService jwtService;
 
   // public Oauth2LoginSuccessHandler(ApplicationProperties applicationProperties,
   // UserRepository userRepository,
@@ -79,7 +82,13 @@ public class Oauth2LoginSuccessHandler implements AuthenticationSuccessHandler {
     UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(user, null,
         user.getAuthorities());
     SecurityContextHolder.getContext().setAuthentication(token);
-    response.sendRedirect(applicationProperties.getLoginSuccessUrl());
+
+    String accessToken = jwtService.createToken(user, Token::getAccess);
+    // String refreshToken = jwtService.createToken(user, Token::getRefresh);
+
+    String redirectUrl = "exp://xdio6pq-chelobat16411-8081.exp.direct/--/authCallback"
+        + "?accessToken=" + URLEncoder.encode(accessToken, StandardCharsets.UTF_8);
+    response.sendRedirect(redirectUrl);
   }
 
   private User createUserFromOauth2User(OAuth2AuthenticationToken authentication) {

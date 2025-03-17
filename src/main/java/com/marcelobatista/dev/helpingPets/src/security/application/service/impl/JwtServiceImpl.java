@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import com.marcelobatista.dev.helpingPets.src.config.security.JwtConfig;
 import com.marcelobatista.dev.helpingPets.src.modules.users.application.service.UserService;
 import com.marcelobatista.dev.helpingPets.src.modules.users.domain.User;
+import com.marcelobatista.dev.helpingPets.src.modules.users.infrastructure.UserRepository;
 import com.marcelobatista.dev.helpingPets.src.security.application.service.JwtService;
 import com.marcelobatista.dev.helpingPets.src.security.domain.Token;
 import com.marcelobatista.dev.helpingPets.src.security.domain.TokenData;
@@ -45,7 +46,7 @@ public class JwtServiceImpl extends JwtConfig implements JwtService {
   private static final String JWT = "JWT";
   private static final String TYP = "typ";
 
-  private final UserService userService;
+  private final UserRepository userRepository;
 
   private final Supplier<SecretKey> key = () -> Keys.hmacShaKeyFor(Decoders.BASE64.decode(getSecretKey()));
 
@@ -106,11 +107,32 @@ public class JwtServiceImpl extends JwtConfig implements JwtService {
   @Override
   public <T> T getTokenData(String token, Function<TokenData, T> tokenFunction) {
     return tokenFunction.apply(TokenData.builder()
-        .valid(Objects.equals(userService.findByEmail(subject.apply(
-            token)).getEmail(), claimsFunction.apply(token).getSubject()))
+        .valid(Objects.equals(
+            userRepository.findByEmail(subject.apply(token))
+                .map(User::getEmail)
+                .orElse(null),
+            claimsFunction.apply(token).getSubject()))
         .claims(claimsFunction.apply(token))
-        .user(userService.findByEmail(subject.apply(token)))
+        .user(userRepository.findByEmail(subject.apply(token)).orElse(null))
         .build());
+  }
+
+  @Override
+  public boolean validateToken(String token, User user) {
+    final String username = extractUsername(token);
+    return (username.equals(user.getUsername()) && !isTokenExpired(token));
+  }
+
+  private boolean isTokenExpired(String token) {
+    return extractExpiration(token).before(new Date());
+  }
+
+  private Date extractExpiration(String token) {
+    return getClaimsValue(token, Claims::getExpiration);
+  }
+
+  private String extractUsername(String token) {
+    return getClaimsValue(token, Claims::getSubject);
   }
 
 }

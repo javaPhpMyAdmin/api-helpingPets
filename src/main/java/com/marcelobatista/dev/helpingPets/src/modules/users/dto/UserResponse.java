@@ -28,8 +28,10 @@ public class UserResponse {
   private String profileImageUrl;
   private List<ConnectedAccountResponse> connectedAccounts = new ArrayList<>();
   private List<String> authorities = new ArrayList<>();
+  private String accessToken;
+  private String refreshToken;
 
-  public UserResponse(User user) {
+  public UserResponse(User user, String accessToken, String refreshToken) {
     this.id = user.getId();
     this.role = user.getRole();
     this.firstName = user.getFirstName();
@@ -39,6 +41,8 @@ public class UserResponse {
     user.getConnectedAccounts().forEach((provider) -> {
       this.connectedAccounts.add(new ConnectedAccountResponse(provider.getProvider(), provider.getConnectedAt()));
     });
+    this.accessToken = accessToken;
+    this.refreshToken = refreshToken;
   }
 
   public UserResponse(User user, Collection<? extends GrantedAuthority> authorities) {
