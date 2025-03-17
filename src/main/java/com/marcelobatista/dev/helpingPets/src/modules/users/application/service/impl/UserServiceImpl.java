@@ -22,7 +22,6 @@ import com.marcelobatista.dev.helpingPets.src.security.application.service.JwtSe
 import com.marcelobatista.dev.helpingPets.src.security.domain.Token;
 import com.marcelobatista.dev.helpingPets.src.security.infrastructure.SecurityUtil;
 import com.marcelobatista.dev.helpingPets.src.shared.enums.EventType;
-import com.marcelobatista.dev.helpingPets.src.shared.enums.TokenType;
 import com.marcelobatista.dev.helpingPets.src.shared.exceptions.ApiException;
 
 import jakarta.transaction.Transactional;

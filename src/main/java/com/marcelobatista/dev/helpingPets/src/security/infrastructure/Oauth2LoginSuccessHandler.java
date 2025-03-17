@@ -84,7 +84,6 @@ public class Oauth2LoginSuccessHandler implements AuthenticationSuccessHandler {
     SecurityContextHolder.getContext().setAuthentication(token);
 
     String accessToken = jwtService.createToken(user, Token::getAccess);
-    // String refreshToken = jwtService.createToken(user, Token::getRefresh);
 
     String redirectUrl = "exp://xdio6pq-chelobat16411-8081.exp.direct/--/authCallback"
         + "?accessToken=" + URLEncoder.encode(accessToken, StandardCharsets.UTF_8);

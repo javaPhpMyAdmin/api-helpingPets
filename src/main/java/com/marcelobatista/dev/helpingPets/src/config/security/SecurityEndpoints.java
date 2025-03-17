@@ -21,8 +21,7 @@ public class SecurityEndpoints {
       "/api/v1/swagger-ui/**",
       // TODO: ONLY FOR TEST
       "/chats/**",
-      "/messages/**",
-      "/auth/ping");
+      "/messages/**");
 
   public static final Map<HttpMethod, List<String>> USER_PROTECTED_ENDPOINTS = Map.of(HttpMethod.PUT, List.of(
       "/user/update-user"),

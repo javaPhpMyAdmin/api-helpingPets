@@ -45,27 +45,24 @@ public class SecurityConfiguration {
 
   public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity)
       throws Exception {
-    httpSecurity.csrf(csrf -> csrf.ignoringRequestMatchers("/auth/**"));
+    httpSecurity.csrf(csrf -> csrf.disable());
     httpSecurity
         .authorizeHttpRequests(
             authorize -> {
-              authorize.requestMatchers("/auth/**").permitAll();
-              // authorize.requestMatchers(SecurityEndpoints.PUBLIC_ENDPOINTS.toArray(new
-              // String[0])).permitAll();
-              // authorize.requestMatchers(org.springframework.http.HttpMethod.OPTIONS,
-              // "/**").permitAll();
+              authorize. .antMatchers("/auth/login", "/auth/ping").permitAll();
+              authorize.requestMatchers(SecurityEndpoints.PUBLIC_ENDPOINTS.toArray(new String[0])).permitAll();
+              authorize.requestMatchers(org.springframework.http.HttpMethod.OPTIONS,
+                  "/**").permitAll();
 
-              // applyMethodBasedAuthorization(authorize,
-              // SecurityEndpoints.USER_PROTECTED_ENDPOINTS, "USER");
-              // applyMethodBasedAuthorization(authorize,
-              // SecurityEndpoints.ADMIN_PROTECTED_ENDPOINTS, "ADMIN");
-              // authorize.anyRequest().authenticated();
+              applyMethodBasedAuthorization(authorize,
+                  SecurityEndpoints.USER_PROTECTED_ENDPOINTS, "USER");
+              applyMethodBasedAuthorization(authorize,
+                  SecurityEndpoints.ADMIN_PROTECTED_ENDPOINTS, "ADMIN");
+              authorize.anyRequest().authenticated();
             });
     httpSecurity.sessionManagement(
         sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED));
 
-    httpSecurity.requestCache(requestCache -> requestCache.disable())
-        .securityContext(securityContext -> securityContext.disable());
     httpSecurity.oauth2Login(customizer -> {
       customizer.successHandler(oauth2LoginSuccessHandler);
     });
@@ -112,32 +109,35 @@ public class SecurityConfiguration {
       return new BCryptPasswordEncoder();
     }
 
-    @Bean
-    public CorsFilter corsFilter() {
-      UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-      CorsConfiguration config = new CorsConfiguration();
+    // @Bean
+    // public CorsFilter corsFilter() {
+    // UrlBasedCorsConfigurationSource source = new
+    // UrlBasedCorsConfigurationSource();
+    // CorsConfiguration config = new CorsConfiguration();
 
-      // config.setAllowedOrigins(List.of("http://localhost:5173",
-      // "http://localhost:8081",
-      // "exp://192.168.79.165:8081",
-      // "exp://192.168.79.165",
-      // "http://192.168.79.165",
-      // "http://192.168.79.165:8081",
-      // "http://192.168.79.165:8081/_expo/loading?platform=ios",
-      // "http://192.168.79.165:8081/_expo/loading"));
-      config.setAllowedOriginPatterns(List.of(
-          "http://localhost:*", // Permitir cualquier puerto en localhost
-          "http://127.0.0.1:*", // Otra forma de localhost
-          "http://192.168.*.*", // Permitir cualquier IP en la red local
-          "exp://*", // Permitir Expo en cualquier IP
-          "http://*.expo.dev"));
-      config.setAllowCredentials(true);
-      config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Incluir OPTIONS
-      config.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept", "Origin"));
-      config.setExposedHeaders(List.of("Authorization"));
-      log.info("CORS Configuration: {}", config.getAllowedOrigins());
-      source.registerCorsConfiguration("/**", config);
-      return new CorsFilter(source);
-    }
+    // // config.setAllowedOrigins(List.of("http://localhost:5173",
+    // // "http://localhost:8081",
+    // // "exp://192.168.79.165:8081",
+    // // "exp://192.168.79.165",
+    // // "http://192.168.79.165",
+    // // "http://192.168.79.165:8081",
+    // // "http://192.168.79.165:8081/_expo/loading?platform=ios",
+    // // "http://192.168.79.165:8081/_expo/loading"));
+    // config.setAllowedOriginPatterns(List.of(
+    // "http://localhost:*", // Permitir cualquier puerto en localhost
+    // "http://127.0.0.1:*", // Otra forma de localhost
+    // "http://192.168.*.*", // Permitir cualquier IP en la red local
+    // "exp://*", // Permitir Expo en cualquier IP
+    // "http://*.expo.dev"));
+    // config.setAllowCredentials(true);
+    // config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+    // // Incluir OPTIONS
+    // config.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept",
+    // "Origin"));
+    // config.setExposedHeaders(List.of("Authorization"));
+    // log.info("CORS Configuration: {}", config.getAllowedOrigins());
+    // source.registerCorsConfiguration("/**", config);
+    // return new CorsFilter(source);
+    // }
   }
 }

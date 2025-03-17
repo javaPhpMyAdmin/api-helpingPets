@@ -15,7 +15,6 @@ import javax.crypto.SecretKey;
 import org.springframework.stereotype.Service;
 
 import com.marcelobatista.dev.helpingPets.src.config.security.JwtConfig;
-import com.marcelobatista.dev.helpingPets.src.modules.users.application.service.UserService;
 import com.marcelobatista.dev.helpingPets.src.modules.users.domain.User;
 import com.marcelobatista.dev.helpingPets.src.modules.users.infrastructure.UserRepository;
 import com.marcelobatista.dev.helpingPets.src.security.application.service.JwtService;
