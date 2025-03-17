@@ -13,7 +13,7 @@ public class SecurityEndpoints {
       "/user/get-all",
       "/user/verify/**",
       "/pets/public/**",
-      "/reports/public/**",
+      // "/reports/public/**",
       "/swagger-ui/**",
       "/swagger-ui.html",
       "/v3/api-docs/**",
@@ -25,7 +25,7 @@ public class SecurityEndpoints {
 
   public static final Map<HttpMethod, List<String>> USER_PROTECTED_ENDPOINTS = Map.of(HttpMethod.PUT, List.of(
       "/user/update-user"),
-      HttpMethod.GET, List.of("/user/me/**",
+      HttpMethod.GET, List.of("/user/me",
           "/adoptions/**"),
       HttpMethod.POST, List.of(
           "/reports/**"));

@@ -25,6 +25,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import com.marcelobatista.dev.helpingPets.src.shared.Response.CustomErrorResponse;
 import com.marcelobatista.dev.helpingPets.src.shared.utils.RequestUtils;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -160,6 +161,23 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
 
     return new ResponseEntity<CustomErrorResponse>(response,
         HttpStatus.BAD_GATEWAY);
+  }
+
+  @org.springframework.web.bind.annotation.ExceptionHandler(value = { ExpiredJwtException.class })
+  public ResponseEntity<CustomErrorResponse> handleExpiredJwtException(ExpiredJwtException ex,
+      HttpServletRequest request) {
+    // Custom error message class
+    CustomErrorResponse response = new CustomErrorResponse(
+        Instant.now().toString(),
+        HttpStatus.UNAUTHORIZED.value(),
+        request.getRequestURI(),
+        HttpStatus.valueOf(HttpStatus.UNAUTHORIZED.value()),
+        ex.getMessage(),
+        ex.getClass().getSimpleName(),
+        Map.of());
+
+    return new ResponseEntity<CustomErrorResponse>(response,
+        HttpStatus.UNAUTHORIZED);
   }
 
 }

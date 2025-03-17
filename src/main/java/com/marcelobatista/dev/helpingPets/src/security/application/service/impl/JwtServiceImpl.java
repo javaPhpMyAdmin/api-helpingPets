@@ -92,7 +92,8 @@ public class JwtServiceImpl extends JwtConfig implements JwtService {
 
   @Override
   public String createToken(User user, Function<Token, String> tokenFunction) {
-    var token = Token.builder().access(buildToken.apply(user, TokenType.ACCESS))
+    var token = Token.builder()
+        .access(buildToken.apply(user, TokenType.ACCESS))
         .refresh(buildToken.apply(user, TokenType.REFRESH))
         .build();
     return tokenFunction.apply(token);
@@ -118,20 +119,23 @@ public class JwtServiceImpl extends JwtConfig implements JwtService {
 
   @Override
   public boolean validateToken(String token, User user) {
-    final String username = extractUsername(token);
-    return (username.equals(user.getUsername()) && !isTokenExpired(token));
+    // final String username = extractUsername(token);
+    // return (username.equals(user.getUsername()) && !isTokenExpired(token));
+    return getTokenData(token, TokenData::isValid) && !isTokenExpired(token);
   }
 
   private boolean isTokenExpired(String token) {
-    return extractExpiration(token).before(new Date());
+    // return extractExpiration(token).before(new Date());
+    Date expiration = getClaimsValue(token, Claims::getExpiration);
+    return expiration != null && expiration.before(new Date());
   }
 
-  private Date extractExpiration(String token) {
-    return getClaimsValue(token, Claims::getExpiration);
-  }
+  // private Date extractExpiration(String token) {
+  // return getClaimsValue(token, Claims::getExpiration);
+  // }
 
-  private String extractUsername(String token) {
-    return getClaimsValue(token, Claims::getSubject);
-  }
+  // private String extractUsername(String token) {
+  // return getClaimsValue(token, Claims::getSubject);
+  // }
 
 }
