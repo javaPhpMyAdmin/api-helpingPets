@@ -43,9 +43,9 @@ public class AuthController {
   @PostMapping("/login")
   public ResponseEntity<?> login(HttpServletRequest request, HttpServletResponse response,
       @Valid @RequestBody LoginRequestDTO loginRequest) {
-    authService.login(request, response, loginRequest);
-    Map<String, String> message = Map.of("message", "LOGIN SUCCESS TEST IMPROVED ....");
-    return ResponseEntity.ok().body(message);
+    var userLogged = authService.login(request, response, loginRequest);
+    return ResponseEntity.ok().body(requestUtils.getResponse(request, Map.of("result", userLogged),
+        "User logged successfully.", HttpStatus.OK));
   }
 
   @PostMapping("/logout")

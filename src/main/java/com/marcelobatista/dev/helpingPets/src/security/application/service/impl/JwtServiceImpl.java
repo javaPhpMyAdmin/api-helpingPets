@@ -80,7 +80,7 @@ public class JwtServiceImpl extends JwtConfig implements JwtService {
           .compact()
       : builder.get()
           .subject(user.getEmail())
-          .expiration(Date.from(Instant.now().plusSeconds(getExpirationToken())))
+          .expiration(Date.from(Instant.now().plusSeconds(3600)))
           .compact();
 
   private Function<HttpServletRequest, Optional<String>> extractRequest = (request) -> {
@@ -115,6 +115,7 @@ public class JwtServiceImpl extends JwtConfig implements JwtService {
             claimsFunction.apply(token).getSubject()))
         .claims(claimsFunction.apply(token))
         .user(userRepository.findByEmail(subject.apply(token)).orElse(null))
+        .expiration(claimsFunction.apply(token).getExpiration().toInstant()) // 🔥 Agregar la fecha de expiración
         .build());
   }
 

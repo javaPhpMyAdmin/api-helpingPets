@@ -180,4 +180,36 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
         HttpStatus.UNAUTHORIZED);
   }
 
+  @org.springframework.web.bind.annotation.ExceptionHandler(TokenRevokedException.class)
+  public ResponseEntity<CustomErrorResponse> handleTokenRevokedException(TokenRevokedException ex,
+      HttpServletRequest request) {
+    CustomErrorResponse response = new CustomErrorResponse(
+        Instant.now().toString(),
+        HttpStatus.UNAUTHORIZED.value(),
+        request.getRequestURI(),
+        HttpStatus.valueOf(HttpStatus.UNAUTHORIZED.value()),
+        ex.getMessage(),
+        ex.getClass().getSimpleName(),
+        Map.of());
+
+    return new ResponseEntity<CustomErrorResponse>(response,
+        HttpStatus.UNAUTHORIZED);
+  }
+
+  @org.springframework.web.bind.annotation.ExceptionHandler(InvalidTokenException.class)
+  public ResponseEntity<CustomErrorResponse> handleInvalidTokenException(InvalidTokenException ex,
+      HttpServletRequest request) {
+    CustomErrorResponse response = new CustomErrorResponse(
+        Instant.now().toString(),
+        HttpStatus.UNAUTHORIZED.value(),
+        request.getRequestURI(),
+        HttpStatus.valueOf(HttpStatus.UNAUTHORIZED.value()),
+        ex.getMessage(),
+        ex.getClass().getSimpleName(),
+        Map.of());
+
+    return new ResponseEntity<CustomErrorResponse>(response,
+        HttpStatus.UNAUTHORIZED);
+  }
+
 }

@@ -11,14 +11,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.marcelobatista.dev.helpingPets.src.modules.users.domain.User;
+import com.marcelobatista.dev.helpingPets.src.modules.users.dto.UserResponse;
 import com.marcelobatista.dev.helpingPets.src.modules.users.infrastructure.UserRepository;
 import com.marcelobatista.dev.helpingPets.src.security.domain.Token;
 import com.marcelobatista.dev.helpingPets.src.security.domain.TokenData;
 import com.marcelobatista.dev.helpingPets.src.security.dto.LoginRequestDTO;
-
-import io.jsonwebtoken.Claims;
 
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
@@ -39,7 +39,8 @@ public class AuthService {
 
   private SecurityContextRepository securityContextRepository = new HttpSessionSecurityContextRepository();
 
-  public void login(HttpServletRequest request, HttpServletResponse response, LoginRequestDTO body)
+  @Transactional
+  public UserResponse login(HttpServletRequest request, HttpServletResponse response, LoginRequestDTO body)
       throws AuthenticationException {
 
     UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(body.getEmail(),
@@ -49,9 +50,11 @@ public class AuthService {
     User user = userRepository.findByEmail(body.getEmail())
         .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-    userTokenService.revokeAllActiveTokensByUser(user.getId()); // Revocar tokens antiguos
+    userTokenService.revokeAllActiveTokensByUser(user.getId());
 
     String jwt = jwtService.createToken(user, Token::getAccess);
+    String refreshJwt = jwtService.createToken(user, Token::getRefresh);
+
     Instant expiresAt = jwtService.getTokenData(jwt, TokenData::getExpiration);
 
     userTokenService.saveToken(user, jwt, expiresAt);
@@ -63,5 +66,6 @@ public class AuthService {
     securityContextHolderStrategy.setContext(context);
     securityContextRepository.saveContext(context, request, response);
 
+    return new UserResponse(user, jwt, refreshJwt);
   }
 }

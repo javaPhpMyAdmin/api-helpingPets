@@ -21,6 +21,8 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
+import org.springframework.security.web.context.NullSecurityContextRepository;
+import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
@@ -68,10 +70,11 @@ public class SecurityConfiguration {
     httpSecurity.oauth2Login(customizer -> {
       customizer.successHandler(oauth2LoginSuccessHandler);
     });
+    httpSecurity.securityContext(
+        securityContext -> securityContext.securityContextRepository(new NullSecurityContextRepository()));
     httpSecurity.addFilterBefore(jwtFilter,
         UsernamePasswordAuthenticationFilter.class);
-    httpSecurity.addFilterBefore(new UsernamePasswordAuthenticationFilter(),
-        LogoutFilter.class);
+
     httpSecurity
         .exceptionHandling(ex -> ex.authenticationEntryPoint(new CustomAuthenticationEntryPoint()));
     // httpSecurity
@@ -79,6 +82,11 @@ public class SecurityConfiguration {
     // CustomAuthenticationEntryPoint()));
 
     return httpSecurity.build();
+  }
+
+  @Bean
+  public SecurityContextRepository securityContextRepository() {
+    return new NullSecurityContextRepository();
   }
 
   private void applyMethodBasedAuthorization(
@@ -98,7 +106,7 @@ public class SecurityConfiguration {
       // Configurar respuesta de error cuando el usuario no está autenticado
       response.setContentType("application/json");
       response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401 Unauthorized
-      response.getWriter().write("{\"error\": \"No autorizado. Debes iniciar sesión.\"}");
+      response.getWriter().write("{\"error\": \"You are not authorized, please login first.\"}");
     }
   }
 

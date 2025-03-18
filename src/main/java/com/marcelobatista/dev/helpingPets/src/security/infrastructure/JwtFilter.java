@@ -13,14 +13,19 @@ import com.marcelobatista.dev.helpingPets.src.security.application.service.JwtSe
 import com.marcelobatista.dev.helpingPets.src.security.application.service.UserTokenService;
 import com.marcelobatista.dev.helpingPets.src.security.domain.TokenData;
 import com.marcelobatista.dev.helpingPets.src.shared.enums.TokenType;
+import com.marcelobatista.dev.helpingPets.src.shared.exceptions.InvalidTokenException;
+import com.marcelobatista.dev.helpingPets.src.shared.exceptions.TokenRevokedException;
+
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.beans.factory.annotation.Qualifier;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
+@Slf4j
 public class JwtFilter extends OncePerRequestFilter {
 
   private final JwtService jwtService;
@@ -44,10 +49,24 @@ public class JwtFilter extends OncePerRequestFilter {
     try {
       String token = jwtService.extractToken(request, TokenType.ACCESS.getValue())
           .orElse(null);
-      if (token == null || jwtService.getTokenData(token, TokenData::isValid)
-          || userTokenService.isTokenValid(token) == false) {
+
+      if (token == null) {
+        log.info("No se encontró token en la cabecera.");
         filterChain.doFilter(request, response);
         return;
+      }
+
+      // Verify if the token is valid
+      if (!jwtService.getTokenData(token, TokenData::isValid)
+          || !userTokenService.isTokenValid(token)) {
+        log.warn("Token inválido o expirado.");
+        throw new InvalidTokenException("Invalid or expired token.");
+      }
+
+      // Verificar si el token ha sido revocado
+      if (userTokenService.isTokenRevoked(token)) {
+        log.warn("Token revocado.");
+        throw new TokenRevokedException("Your token has been revoked. Please login again.");
       }
 
       User user = jwtService.getTokenData(token, TokenData::getUser);
@@ -61,6 +80,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
           userToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
           SecurityContextHolder.getContext().setAuthentication(userToken);
+          log.info("Authenticated User In SecurityContext: {}", user.getEmail());
         }
 
       }

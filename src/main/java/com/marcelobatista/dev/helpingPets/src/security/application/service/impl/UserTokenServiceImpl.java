@@ -67,4 +67,11 @@ public class UserTokenServiceImpl implements UserTokenService {
       userTokenRepository.saveAll(activeTokens);
     }
   }
+
+  @Override
+  public boolean isTokenRevoked(String token) {
+    return userTokenRepository.findByToken(token)
+        .map(UserToken::getRevoked)
+        .orElse(true); // Si el token no existe, se considera revocado
+  }
 }

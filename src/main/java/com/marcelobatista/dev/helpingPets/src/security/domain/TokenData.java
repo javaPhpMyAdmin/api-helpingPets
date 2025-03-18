@@ -1,6 +1,5 @@
 package com.marcelobatista.dev.helpingPets.src.security.domain;
 
-import java.sql.Date;
 import java.time.Instant;
 import java.util.List;
 

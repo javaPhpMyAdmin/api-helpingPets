@@ -14,4 +14,6 @@ public interface UserTokenService {
   public void revokeToken(String token);
 
   public void cleanExpiredTokens();
+
+  public boolean isTokenRevoked(String token);
 }
