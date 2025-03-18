@@ -1,5 +1,7 @@
 package com.marcelobatista.dev.helpingPets.src.security.domain;
 
+import java.sql.Date;
+import java.time.Instant;
 import java.util.List;
 
 import org.springframework.security.core.GrantedAuthority;
@@ -19,5 +21,6 @@ public class TokenData {
   private boolean valid;
   private Claims claims;
   List<GrantedAuthority> authorities;
+  private Instant expiration;
 
 }

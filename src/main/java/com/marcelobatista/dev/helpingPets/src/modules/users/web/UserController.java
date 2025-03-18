@@ -9,6 +9,7 @@ import com.marcelobatista.dev.helpingPets.src.modules.users.dto.UpdateUserReques
 import com.marcelobatista.dev.helpingPets.src.modules.users.dto.UserResponse;
 import com.marcelobatista.dev.helpingPets.src.security.infrastructure.SecurityUtil;
 import com.marcelobatista.dev.helpingPets.src.shared.Response.GlobalResponse;
+import com.marcelobatista.dev.helpingPets.src.shared.exceptions.ApiException;
 import com.marcelobatista.dev.helpingPets.src.shared.utils.RequestUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -77,6 +78,10 @@ public class UserController {
   public ResponseEntity<GlobalResponse> getUserInfo(
       HttpServletRequest request) {
     var user = SecurityUtil.getAuthenticatedUser();
+    if (user == null) {
+      throw ApiException.builder()
+          .message("User not authenticated").status(HttpStatus.UNAUTHORIZED.value()).build();
+    }
     return ResponseEntity.ok()
         .body(requestUtils.getResponse(request, Map.of("user", user),
             "The user information was correctly retrieved", HttpStatus.OK));

@@ -1,5 +1,6 @@
 package com.marcelobatista.dev.helpingPets.src.modules.users.application.service.impl;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -19,7 +20,9 @@ import com.marcelobatista.dev.helpingPets.src.modules.users.dto.UserResponse;
 import com.marcelobatista.dev.helpingPets.src.modules.users.infrastructure.UserRepository;
 import com.marcelobatista.dev.helpingPets.src.modules.users.infrastructure.VerificationCodeRepository;
 import com.marcelobatista.dev.helpingPets.src.security.application.service.JwtService;
+import com.marcelobatista.dev.helpingPets.src.security.application.service.UserTokenService;
 import com.marcelobatista.dev.helpingPets.src.security.domain.Token;
+import com.marcelobatista.dev.helpingPets.src.security.domain.TokenData;
 import com.marcelobatista.dev.helpingPets.src.security.infrastructure.SecurityUtil;
 import com.marcelobatista.dev.helpingPets.src.shared.enums.EventType;
 import com.marcelobatista.dev.helpingPets.src.shared.exceptions.ApiException;
@@ -37,6 +40,7 @@ public class UserServiceImpl implements UserService {
   private final VerificationCodeRepository verificationCodeRepository;
   private final ApplicationEventPublisher publisher;
   private final JwtService jwtService;
+  private final UserTokenService userTokenService;
 
   @Transactional
   @Override
@@ -44,9 +48,14 @@ public class UserServiceImpl implements UserService {
     var user = new User(userRequest);
     user = userRepository.save(user);
     sendVerificationEmail(user);
-    // Generar tokens
+
     String accessToken = jwtService.createToken(user, Token::getAccess);
     String refreshToken = jwtService.createToken(user, Token::getRefresh);
+
+    Instant expiresAt = jwtService.getTokenData(accessToken, TokenData::getExpiration);
+
+    userTokenService.saveToken(user, accessToken, expiresAt);
+
     return new UserResponse(user, accessToken, refreshToken);
 
   }

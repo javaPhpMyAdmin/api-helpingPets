@@ -1,5 +1,7 @@
 package com.marcelobatista.dev.helpingPets.src.security.application.service;
 
+import java.time.Instant;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -7,9 +9,16 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import com.marcelobatista.dev.helpingPets.src.modules.users.domain.User;
+import com.marcelobatista.dev.helpingPets.src.modules.users.infrastructure.UserRepository;
+import com.marcelobatista.dev.helpingPets.src.security.domain.Token;
+import com.marcelobatista.dev.helpingPets.src.security.domain.TokenData;
 import com.marcelobatista.dev.helpingPets.src.security.dto.LoginRequestDTO;
+
+import io.jsonwebtoken.Claims;
 
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
@@ -24,6 +33,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class AuthService {
   private final AuthenticationManager authenticationManager;
+  private final UserTokenService userTokenService;
+  private final UserRepository userRepository;
+  private final JwtService jwtService;
+
   private SecurityContextRepository securityContextRepository = new HttpSessionSecurityContextRepository();
 
   public void login(HttpServletRequest request, HttpServletResponse response, LoginRequestDTO body)
@@ -32,6 +45,16 @@ public class AuthService {
     UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(body.getEmail(),
         body.getPassword());
     Authentication authentication = authenticationManager.authenticate(token);
+
+    User user = userRepository.findByEmail(body.getEmail())
+        .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+    userTokenService.revokeAllActiveTokensByUser(user.getId()); // Revocar tokens antiguos
+
+    String jwt = jwtService.createToken(user, Token::getAccess);
+    Instant expiresAt = jwtService.getTokenData(jwt, TokenData::getExpiration);
+
+    userTokenService.saveToken(user, jwt, expiresAt);
 
     // Save the authentication in the SecurityContext
     SecurityContextHolderStrategy securityContextHolderStrategy = SecurityContextHolder.getContextHolderStrategy();

@@ -12,6 +12,7 @@ import java.util.function.Supplier;
 
 import javax.crypto.SecretKey;
 
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import com.marcelobatista.dev.helpingPets.src.config.security.JwtConfig;
@@ -130,6 +131,10 @@ public class JwtServiceImpl extends JwtConfig implements JwtService {
     return expiration != null && expiration.before(new Date());
   }
 
+  public boolean isTokenValid(String token, UserDetails userDetails) {
+    final String username = getClaimsValue(token, Claims::getSubject);
+    return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
+  }
   // private Date extractExpiration(String token) {
   // return getClaimsValue(token, Claims::getExpiration);
   // }

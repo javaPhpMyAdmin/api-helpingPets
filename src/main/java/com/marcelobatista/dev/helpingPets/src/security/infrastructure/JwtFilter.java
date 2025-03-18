@@ -10,6 +10,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.marcelobatista.dev.helpingPets.src.modules.users.domain.User;
 import com.marcelobatista.dev.helpingPets.src.security.application.service.JwtService;
+import com.marcelobatista.dev.helpingPets.src.security.application.service.UserTokenService;
 import com.marcelobatista.dev.helpingPets.src.security.domain.TokenData;
 import com.marcelobatista.dev.helpingPets.src.shared.enums.TokenType;
 import org.springframework.web.servlet.HandlerExceptionResolver;
@@ -25,10 +26,13 @@ public class JwtFilter extends OncePerRequestFilter {
   private final JwtService jwtService;
 
   private final HandlerExceptionResolver resolver;
+  private final UserTokenService userTokenService;
 
-  public JwtFilter(JwtService jwtService, @Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver) {
+  public JwtFilter(JwtService jwtService, @Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver,
+      UserTokenService userTokenService) {
     this.jwtService = jwtService;
     this.resolver = resolver;
+    this.userTokenService = userTokenService;
   }
 
   @SuppressWarnings("null")
@@ -40,7 +44,8 @@ public class JwtFilter extends OncePerRequestFilter {
     try {
       String token = jwtService.extractToken(request, TokenType.ACCESS.getValue())
           .orElse(null);
-      if (token == null) {
+      if (token == null || jwtService.getTokenData(token, TokenData::isValid)
+          || userTokenService.isTokenValid(token) == false) {
         filterChain.doFilter(request, response);
         return;
       }
