@@ -176,7 +176,7 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
         HttpStatus.UNAUTHORIZED.value(),
         request.getRequestURI(),
         HttpStatus.valueOf(HttpStatus.UNAUTHORIZED.value()),
-        ex.getMessage(),
+        "Expired JWT token",
         ex.getClass().getSimpleName(),
         Map.of());
 

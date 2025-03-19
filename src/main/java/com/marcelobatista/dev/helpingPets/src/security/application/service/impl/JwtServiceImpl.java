@@ -76,7 +76,7 @@ public class JwtServiceImpl extends JwtConfig implements JwtService {
           .subject(user.getEmail())
           .claim(AUTHORITIES, user.getAuthorities())
           .claim(ROLE, user.getRole())
-          .expiration(Date.from(Instant.now().plusSeconds(getExpirationToken())))
+          .expiration(Date.from(Instant.now().plusMillis(getExpirationToken())))
           .compact()
       : builder.get()
           .subject(user.getEmail())

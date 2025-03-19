@@ -66,10 +66,6 @@ public class UserServiceImpl implements UserService {
     publisher.publishEvent(new UserEvent(user, EventType.REGISTRATION, Map.of("key", verificationCode.getCode())));
     verificationCode.setEmailSent(true);
     verificationCodeRepository.save(verificationCode);
-
-    // SendWelcomeEmailJob sendWelcomEmailJob = new
-    // SendWelcomeEmailJob(user.getId());
-    // BackgroundJobRequest.enqueue(sendWelcomEmailJob);
   }
 
   @Transactional

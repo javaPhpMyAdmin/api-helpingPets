@@ -37,7 +37,7 @@ public class UserToken {
 
   private Boolean revoked;
 
-  @Column(name = "is_logout")
+  @Column(name = "logged_out")
   private Boolean isLogout;
 
   @ManyToOne(fetch = FetchType.LAZY)
