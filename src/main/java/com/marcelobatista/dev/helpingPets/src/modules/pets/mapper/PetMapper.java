@@ -12,7 +12,6 @@ import com.marcelobatista.dev.helpingPets.src.modules.pets.dto.PetDTO;
 
 @Mapper(componentModel = "spring", builder = @Builder(disableBuilder = true))
 public interface PetMapper {
-
   @Mapping(source = "owner.id", target = "ownerId")
   @Mapping(source = "petStatus", target = "status")
   PetDTO toDto(PetEntity petEntity);

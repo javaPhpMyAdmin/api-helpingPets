@@ -26,6 +26,10 @@ import com.marcelobatista.dev.helpingPets.src.shared.Response.CustomErrorRespons
 import com.marcelobatista.dev.helpingPets.src.shared.utils.RequestUtils;
 
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.PrematureJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -210,6 +214,66 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
 
     return new ResponseEntity<CustomErrorResponse>(response,
         HttpStatus.UNAUTHORIZED);
+  }
+
+  @org.springframework.web.bind.annotation.ExceptionHandler(MalformedJwtException.class)
+  public ResponseEntity<CustomErrorResponse> handleMalformedJwtException(MalformedJwtException ex,
+      HttpServletRequest request) {
+    CustomErrorResponse response = new CustomErrorResponse(
+        Instant.now().toString(),
+        HttpStatus.UNAUTHORIZED.value(), // 401 Unauthorized
+        request.getRequestURI(),
+        HttpStatus.UNAUTHORIZED,
+        "Invalid or malformed JWT token",
+        ex.getClass().getSimpleName(),
+        Map.of());
+
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+  }
+
+  @org.springframework.web.bind.annotation.ExceptionHandler(UnsupportedJwtException.class)
+  public ResponseEntity<CustomErrorResponse> handleUnsupportedJwtException(UnsupportedJwtException ex,
+      HttpServletRequest request) {
+    CustomErrorResponse response = new CustomErrorResponse(
+        Instant.now().toString(),
+        HttpStatus.UNAUTHORIZED.value(),
+        request.getRequestURI(),
+        HttpStatus.UNAUTHORIZED,
+        "JWT token is not supported",
+        ex.getClass().getSimpleName(),
+        Map.of());
+
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+  }
+
+  @org.springframework.web.bind.annotation.ExceptionHandler(SignatureException.class)
+  public ResponseEntity<CustomErrorResponse> handleSignatureException(SignatureException ex,
+      HttpServletRequest request) {
+    CustomErrorResponse response = new CustomErrorResponse(
+        Instant.now().toString(),
+        HttpStatus.UNAUTHORIZED.value(),
+        request.getRequestURI(),
+        HttpStatus.UNAUTHORIZED,
+        "Invalid JWT signature",
+        ex.getClass().getSimpleName(),
+        Map.of());
+
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+  }
+
+  @org.springframework.web.bind.annotation.ExceptionHandler(PrematureJwtException.class)
+  public ResponseEntity<CustomErrorResponse> handlePrematureJwtException(PrematureJwtException ex,
+      HttpServletRequest request) {
+    CustomErrorResponse response = new CustomErrorResponse(
+        Instant.now().toString(),
+        HttpStatus.UNAUTHORIZED.value(),
+        request.getRequestURI(),
+        HttpStatus.UNAUTHORIZED,
+        "JWT token is not yet valid",
+        ex.getClass().getSimpleName(),
+        Map.of());
+
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
   }
 
 }

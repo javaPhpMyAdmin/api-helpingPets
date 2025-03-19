@@ -9,6 +9,7 @@ import com.marcelobatista.dev.helpingPets.src.modules.chat.dto.ChatMessageDTO;
 
 @Mapper(componentModel = "spring", builder = @Builder(disableBuilder = true))
 public interface ChatMessageMapper {
+
   @Mapping(source = "conversation.id", target = "conversationId")
   @Mapping(source = "sender.id", target = "senderId")
   ChatMessageDTO toDto(ChatMessageEntity message);

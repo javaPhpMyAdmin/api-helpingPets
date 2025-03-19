@@ -82,8 +82,10 @@ public class UserController {
       throw ApiException.builder()
           .message("User not authenticated").status(HttpStatus.UNAUTHORIZED.value()).build();
     }
+
+    UserResponse userResponse = new UserResponse(user, null, null);
     return ResponseEntity.ok()
-        .body(requestUtils.getResponse(request, Map.of("user", user),
+        .body(requestUtils.getResponse(request, Map.of("user", userResponse),
             "The user information was correctly retrieved", HttpStatus.OK));
   }
 

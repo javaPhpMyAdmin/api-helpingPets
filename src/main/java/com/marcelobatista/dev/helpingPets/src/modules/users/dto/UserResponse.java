@@ -8,6 +8,7 @@ import java.util.List;
 import org.springframework.lang.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.marcelobatista.dev.helpingPets.src.modules.users.domain.Role;
 import com.marcelobatista.dev.helpingPets.src.modules.users.domain.User;
 import com.marcelobatista.dev.helpingPets.src.shared.utils.Client;
@@ -16,6 +17,7 @@ import lombok.Data;
 
 @Data
 @Client
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserResponse {
   private Long id;
   private Role role;
