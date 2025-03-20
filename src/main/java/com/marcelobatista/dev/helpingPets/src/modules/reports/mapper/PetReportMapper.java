@@ -14,6 +14,7 @@ import com.marcelobatista.dev.helpingPets.src.modules.reports.dto.LostPetReportD
 
 @Mapper(componentModel = "spring", builder = @Builder(disableBuilder = true))
 public interface PetReportMapper {
+
   @Mapping(target = "reportType", constant = "LOST")
   @Mapping(source = "reporter.reporterId", target = "reportedBy")
   @Mapping(target = "title", ignore = true)

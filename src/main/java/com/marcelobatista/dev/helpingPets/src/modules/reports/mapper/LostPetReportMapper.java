@@ -17,6 +17,7 @@ import com.marcelobatista.dev.helpingPets.src.modules.reports.dto.LostPetReportD
 
 @Mapper(componentModel = "spring", builder = @org.mapstruct.Builder(disableBuilder = true))
 public interface LostPetReportMapper {
+
   @Mapping(target = "reporter", source = "entity", qualifiedByName = "convertReporter")
   @Mapping(target = "images", source = "entity.imageUrls", qualifiedByName = "convertImages")
   @Mapping(target = "pet", source = "entity", qualifiedByName = "convertPet")

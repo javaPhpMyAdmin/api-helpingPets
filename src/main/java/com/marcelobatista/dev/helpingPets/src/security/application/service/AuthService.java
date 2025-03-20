@@ -19,10 +19,13 @@ import com.marcelobatista.dev.helpingPets.src.modules.users.infrastructure.UserR
 import com.marcelobatista.dev.helpingPets.src.security.domain.Token;
 import com.marcelobatista.dev.helpingPets.src.security.domain.TokenData;
 import com.marcelobatista.dev.helpingPets.src.security.dto.LoginRequestDTO;
+import com.marcelobatista.dev.helpingPets.src.shared.enums.TokenType;
 
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +41,7 @@ public class AuthService {
   private final JwtService jwtService;
 
   private SecurityContextRepository securityContextRepository = new HttpSessionSecurityContextRepository();
+  private final SecurityContextLogoutHandler logoutHandler = new SecurityContextLogoutHandler();
 
   @Transactional
   public UserResponse login(HttpServletRequest request, HttpServletResponse response, LoginRequestDTO body)
@@ -67,5 +71,33 @@ public class AuthService {
     securityContextRepository.saveContext(context, request, response);
 
     return new UserResponse(user, jwt, refreshJwt);
+  }
+
+  public void logout(HttpServletRequest request, HttpServletResponse response) {
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+    if (auth != null) {
+      logoutHandler.logout(request, response, auth);
+      SecurityContextHolder.clearContext();
+    }
+
+    revokeTokenIfExists(request);
+    clearCookie(response);
+  }
+
+  private void revokeTokenIfExists(HttpServletRequest request) {
+    String existingToken = jwtService.extractToken(request, TokenType.ACCESS.getValue()).orElse(null);
+    if (existingToken != null) {
+      userTokenService.revokeToken(existingToken);
+    }
+  }
+
+  private void clearCookie(HttpServletResponse response) {
+    Cookie cookie = new Cookie("JSESSIONID", null);
+    cookie.setHttpOnly(true);
+    cookie.setSecure(true);
+    cookie.setPath("/");
+    cookie.setMaxAge(0);
+    response.addCookie(cookie);
   }
 }
