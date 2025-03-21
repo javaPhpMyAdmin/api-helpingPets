@@ -19,27 +19,35 @@ import lombok.RequiredArgsConstructor;
 @Component
 @RequiredArgsConstructor
 public class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
+  private static final String ERROR_SERIALIZING_LOGOUT_RESPONSE = "Error serializing logout response";
+  private static final String THE_USER_WAS_LOGGED_OUT_CORRECTLY = "The user was logged out correctly";
+  private static final String LOGOUT_SUCCESS_TOKEN_REVOKED = "Logout Success, token revoked";
+  private static final String RESULT = "result";
+  private static final String UTF_8 = "UTF-8";
+  private static final String APPLICATION_JSON = "application/json";
   private final RequestUtils requestUtils;
+  private final ObjectMapper objectMapper = new ObjectMapper();
 
   @Override
   public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication)
-      throws IOException {
-    response.setContentType("application/json");
-    response.setCharacterEncoding("UTF-8");
+      throws IOException, java.io.IOException {
+    response.setContentType(APPLICATION_JSON);
+    response.setCharacterEncoding(UTF_8);
     response.setStatus(HttpServletResponse.SC_OK);
-
+    String jsonResponse;
     try {
-      String jsonResponse = new ObjectMapper().writeValueAsString(
+      jsonResponse = objectMapper.writeValueAsString(
           requestUtils.getResponse(
               request,
-              Map.of("Token", "Logout Success, token revoked"),
-              "The user was logged out correctly",
+              Map.of(RESULT, LOGOUT_SUCCESS_TOKEN_REVOKED),
+              THE_USER_WAS_LOGGED_OUT_CORRECTLY,
               HttpStatus.OK));
-
-      response.getWriter().write(jsonResponse);
-      response.getWriter().flush();
     } catch (JsonProcessingException e) {
-      response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error processing logout response");
+      response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ERROR_SERIALIZING_LOGOUT_RESPONSE);
+      return;
     }
+
+    response.getWriter().write(jsonResponse);
+    response.getWriter().flush();
   }
 }

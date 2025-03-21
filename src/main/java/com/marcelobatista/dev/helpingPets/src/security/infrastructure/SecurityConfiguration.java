@@ -31,18 +31,28 @@ import com.marcelobatista.dev.helpingPets.src.security.application.service.UserD
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Configuration
 @EnableMethodSecurity
-@RequiredArgsConstructor
 @Slf4j
 public class SecurityConfiguration {
 
   private final Oauth2LoginSuccessHandler oauth2LoginSuccessHandler;
   private final UserDetailsServiceImpl userDetailsService;
+  private final CustomLogoutSuccessHandler customLogoutSuccessHandler;
+  private final CustomLogoutHandler customLogoutHandler;
   private final JwtFilter jwtFilter;
+
+  public SecurityConfiguration(CustomLogoutHandler customLogoutHandler, UserDetailsServiceImpl userDetailsService,
+      Oauth2LoginSuccessHandler oauth2LoginSuccessHandler, JwtFilter jwtFilter,
+      CustomLogoutSuccessHandler customLogoutSuccessHandler) {
+    this.customLogoutHandler = customLogoutHandler;
+    this.oauth2LoginSuccessHandler = oauth2LoginSuccessHandler;
+    this.userDetailsService = userDetailsService;
+    this.customLogoutSuccessHandler = customLogoutSuccessHandler;
+    this.jwtFilter = jwtFilter;
+  }
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity)
@@ -76,9 +86,10 @@ public class SecurityConfiguration {
 
     httpSecurity
         .exceptionHandling(ex -> ex.authenticationEntryPoint(new CustomAuthenticationEntryPoint()));
-    // httpSecurity
-    // .exceptionHandling(ex -> ex.authenticationEntryPoint(new
-    // CustomAuthenticationEntryPoint()));
+    httpSecurity.logout(logout -> logout
+        .logoutUrl("/auth/logout")
+        .addLogoutHandler(customLogoutHandler)
+        .logoutSuccessHandler(customLogoutSuccessHandler));
 
     return httpSecurity.build();
   }
@@ -120,6 +131,24 @@ public class SecurityConfiguration {
   @Bean
   public PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
+  }
+
+  @Bean
+
+  public CorsFilter corsFilter() {
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    CorsConfiguration config = new CorsConfiguration();
+
+    config.setAllowedOrigins(List.of("http://localhost:5173")); // Asegurar origen correcto
+    config.setAllowCredentials(true);
+    config.setAllowedMethods(
+        List.of(HttpMethod.GET.name(), HttpMethod.PUT.name(), HttpMethod.POST.name(), HttpMethod.DELETE.name())); // Incluir
+                                                                                                                  // OPTIONS
+    config.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept", "Origin"));
+    config.setExposedHeaders(List.of("Authorization"));
+
+    source.registerCorsConfiguration("/**", config);
+    return new CorsFilter(source);
   }
 
   // @Bean
@@ -170,18 +199,4 @@ public class SecurityConfiguration {
   // source.registerCorsConfiguration("/**", config);
   // return new CorsFilter(source);
   // }
-  @Bean
-  public CorsFilter corsFilter() {
-    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-    CorsConfiguration config = new CorsConfiguration();
-
-    config.setAllowedOrigins(List.of("http://localhost:5173")); // Asegurar origen correcto
-    config.setAllowCredentials(true);
-    config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE")); // Incluir OPTIONS
-    config.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept", "Origin"));
-    config.setExposedHeaders(List.of("Authorization"));
-
-    source.registerCorsConfiguration("/**", config);
-    return new CorsFilter(source);
-  }
 }

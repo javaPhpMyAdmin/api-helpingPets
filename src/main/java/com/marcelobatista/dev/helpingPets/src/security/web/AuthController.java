@@ -22,15 +22,17 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping(AuthController.AUTH)
 @RequiredArgsConstructor
 @Tag(name = "Authentication", description = "Authentication managment")
 @Slf4j
 public class AuthController {
 
+  private static final String RESULT = "result";
+  private static final String USER_LOGGED_SUCCESSFULLY = "User logged successfully.";
+  static final String AUTH = "/auth";
   private static final String LOGIN_SUCCESS = "/login-success";
   private static final String PING = "/ping";
-  private static final String LOGOUT = "/logout";
   private static final String LOGIN = "/login";
 
   private final RequestUtils requestUtils;
@@ -41,19 +43,8 @@ public class AuthController {
   public ResponseEntity<?> login(HttpServletRequest request, HttpServletResponse response,
       @Valid @RequestBody LoginRequestDTO loginRequest) {
     var userLogged = authService.login(request, response, loginRequest);
-    return ResponseEntity.ok().body(requestUtils.getResponse(request, Map.of("result", userLogged),
-        "User logged successfully.", HttpStatus.OK));
-  }
-
-  @PostMapping(LOGOUT)
-  public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
-    authService.logout(request, response);
-    return ResponseEntity.ok().body(
-        requestUtils.getResponse(
-            request,
-            Map.of("Token", "Logout Success, token revoked"),
-            "The user was logged out correctly",
-            HttpStatus.OK));
+    return ResponseEntity.ok().body(requestUtils.getResponse(request, Map.of(RESULT, userLogged),
+        USER_LOGGED_SUCCESSFULLY, HttpStatus.OK));
   }
 
   @GetMapping(LOGIN_SUCCESS)
