@@ -19,6 +19,7 @@ import com.marcelobatista.dev.helpingPets.src.modules.users.domain.User;
 
 @Mapper(componentModel = "spring", builder = @Builder(disableBuilder = true))
 public interface FoundPetReportMapper {
+
   @Mapping(target = "reporter", source = "entity.reporter", qualifiedByName = "convertReporter")
   @Mapping(target = "image.imageUrl", source = "imageUrl")
   @Mapping(target = "image.description", source = "description")

@@ -40,6 +40,7 @@ import lombok.Setter;
 @Client
 @Table(name = "users")
 public class User implements UserDetails {
+  private static final String USER_DEFAULT_PROFILE_URL = "https://static.vecteezy.com/system/resources/thumbnails/024/983/914/small_2x/simple-user-default-icon-free-png.png";
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -71,6 +72,7 @@ public class User implements UserDetails {
     this.firstName = data.getFirstName();
     this.lastName = data.getLastName();
     this.role = Role.USER;
+    this.profileImageUrl = USER_DEFAULT_PROFILE_URL;
   }
 
   public User(OAuth2User oAuth2User) {
@@ -88,6 +90,7 @@ public class User implements UserDetails {
     }
     this.verified = true;
     this.role = Role.USER;
+    this.profileImageUrl = oAuth2User.getAttribute("picture");
   }
 
   public void addConnectedAccount(UserConnectedAccount connectedAccount) {

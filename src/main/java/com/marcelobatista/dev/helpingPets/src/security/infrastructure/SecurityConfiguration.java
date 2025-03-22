@@ -84,8 +84,9 @@ public class SecurityConfiguration {
     httpSecurity.addFilterBefore(jwtFilter,
         UsernamePasswordAuthenticationFilter.class);
 
-    httpSecurity
-        .exceptionHandling(ex -> ex.authenticationEntryPoint(new CustomAuthenticationEntryPoint()));
+    // httpSecurity
+    // .exceptionHandling(ex -> ex.authenticationEntryPoint(new
+    // CustomAuthenticationEntryPoint()));
     httpSecurity.logout(logout -> logout
         .logoutUrl("/auth/logout")
         .addLogoutHandler(customLogoutHandler)
