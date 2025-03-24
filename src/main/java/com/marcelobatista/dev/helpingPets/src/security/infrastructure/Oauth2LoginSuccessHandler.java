@@ -3,6 +3,7 @@ package com.marcelobatista.dev.helpingPets.src.security.infrastructure;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.Optional;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,7 +18,9 @@ import com.marcelobatista.dev.helpingPets.src.modules.users.domain.UserConnected
 import com.marcelobatista.dev.helpingPets.src.modules.users.infrastructure.ConnectedAccountRepository;
 import com.marcelobatista.dev.helpingPets.src.modules.users.infrastructure.UserRepository;
 import com.marcelobatista.dev.helpingPets.src.security.application.service.JwtService;
+import com.marcelobatista.dev.helpingPets.src.security.application.service.UserTokenService;
 import com.marcelobatista.dev.helpingPets.src.security.domain.Token;
+import com.marcelobatista.dev.helpingPets.src.security.domain.TokenData;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -33,6 +36,7 @@ public class Oauth2LoginSuccessHandler implements AuthenticationSuccessHandler {
   private final ConnectedAccountRepository connectedAccountRepository;
   private final UserRepository userRepository;
   private final JwtService jwtService;
+  private final UserTokenService userTokenService;
 
   // public Oauth2LoginSuccessHandler(ApplicationProperties applicationProperties,
   // UserRepository userRepository,
@@ -74,6 +78,7 @@ public class Oauth2LoginSuccessHandler implements AuthenticationSuccessHandler {
       authenticateUser(existingUser, response);
     } else {
       User newUser = createUserFromOauth2User(authenticationToken);
+      System.out.println("USER IN SUCCESS HANDLER" + newUser);
       authenticateUser(newUser, response);
     }
   }
@@ -84,8 +89,11 @@ public class Oauth2LoginSuccessHandler implements AuthenticationSuccessHandler {
     SecurityContextHolder.getContext().setAuthentication(token);
 
     String accessToken = jwtService.createToken(user, Token::getAccess);
+    Instant expiresAt = jwtService.getTokenData(accessToken, TokenData::getExpiration);
 
-    String redirectUrl = "exp://xdio6pq-chelobat16411-8081.exp.direct/--/authCallback"
+    userTokenService.saveToken(user, accessToken, expiresAt);
+
+    String redirectUrl = "exp://jbqyxvc-chelobat16411-8081.exp.direct/--/authCallback"
         + "?accessToken=" + URLEncoder.encode(accessToken, StandardCharsets.UTF_8);
     response.sendRedirect(redirectUrl);
   }

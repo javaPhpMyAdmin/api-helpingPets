@@ -22,12 +22,14 @@ public interface LostPetReportMapper {
   @Mapping(target = "pet", source = "entity", qualifiedByName = "convertPet")
   @Mapping(target = "metadata", source = "entity", qualifiedByName = "convertMetadata")
   @Mapping(target = "reportId", source = "id")
+  @Mapping(target = "title", source = "title")
   LostPetReportDTO toDto(LostPetReport entity);
 
   @Mapping(target = "reporter", ignore = true)
   @Mapping(target = "status", ignore = true)
   @Mapping(target = "reportType", ignore = true)
   @Mapping(target = "imageUrls", ignore = true)
+  @Mapping(target = "title", source = "title")
   LostPetReport toEntity(CreateLostPetReportDTO dto);
 
   List<LostPetReportDTO> toDtoList(Page<LostPetReport> entities);

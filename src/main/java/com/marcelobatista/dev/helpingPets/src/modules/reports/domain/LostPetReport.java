@@ -40,6 +40,9 @@ public class LostPetReport {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
+  @Setter
+  private String title;
+
   @ManyToOne
   @JoinColumn(name = "reporter_id", nullable = false)
   @Setter

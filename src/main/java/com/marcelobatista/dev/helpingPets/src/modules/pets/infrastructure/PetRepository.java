@@ -18,6 +18,8 @@ public interface PetRepository extends JpaRepository<PetEntity, Long> {
 
   Page<PetEntity> findByOwnerId(Long ownerId, Pageable pageable);
 
+  Page<PetEntity> findAllByOrderByCreatedAtDesc(Pageable pageable);
+
   // TODO: FOR TESTING PURPOSES
   @Query(value = "SELECT * FROM pets p WHERE p.name = :name ORDER BY p.noExiste DESC", nativeQuery = true)
   List<PetEntity> findByName(@Param("name") String name);

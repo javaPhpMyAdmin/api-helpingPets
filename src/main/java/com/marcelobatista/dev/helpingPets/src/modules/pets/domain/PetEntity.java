@@ -10,6 +10,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 
 import com.marcelobatista.dev.helpingPets.src.modules.pets.dto.PetUpdateDTO;
 import com.marcelobatista.dev.helpingPets.src.modules.users.domain.User;
+import com.marcelobatista.dev.helpingPets.src.shared.enums.PetGender;
 import com.marcelobatista.dev.helpingPets.src.shared.enums.PetStatus;
 import com.marcelobatista.dev.helpingPets.src.shared.exceptions.ApiException;
 
@@ -73,6 +74,16 @@ public class PetEntity {
   @Setter
   private LocalDateTime updatedAt;
 
+  @Setter
+  @Enumerated(EnumType.STRING)
+  private PetGender gender;
+
+  @Setter
+  private String age;
+
+  @Setter
+  private Integer weight;
+
   public void assignOwner(User owner) {
     Optional.ofNullable(this.owner)
         .ifPresent(o -> {
@@ -98,12 +109,21 @@ public class PetEntity {
     Optional.ofNullable(petUpdateDTO.getBreed()).ifPresent(this::setBreed);
     Optional.ofNullable(petUpdateDTO.getDescription()).ifPresent(this::setDescription);
     Optional.ofNullable(petUpdateDTO.getImageUrls()).ifPresent(this::setImageUrls);
+    Optional.ofNullable(petUpdateDTO.getAge()).ifPresent(this::setAge);
+    Optional.ofNullable(petUpdateDTO.getWeight()).ifPresent(this::setWeight);
 
     Optional.ofNullable(petUpdateDTO.getStatus()).ifPresent(status -> {
       try {
         this.setPetStatus(PetStatus.valueOf(status.toUpperCase()));
       } catch (IllegalArgumentException e) {
         throw ApiException.builder().message(("Invalid status value: " + status)).build();
+      }
+    });
+    Optional.ofNullable(petUpdateDTO.getGender()).ifPresent(gender -> {
+      try {
+        this.setPetStatus(PetStatus.valueOf(gender.toUpperCase()));
+      } catch (IllegalArgumentException e) {
+        throw ApiException.builder().message(("Invalid status value: " + gender)).build();
       }
     });
   }

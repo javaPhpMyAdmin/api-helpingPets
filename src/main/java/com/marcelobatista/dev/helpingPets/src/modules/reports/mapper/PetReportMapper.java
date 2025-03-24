@@ -17,10 +17,10 @@ public interface PetReportMapper {
 
   @Mapping(target = "reportType", constant = "LOST")
   @Mapping(source = "reporter.reporterId", target = "reportedBy")
-  @Mapping(target = "title", ignore = true)
+  @Mapping(target = "title", source = "title")
   @Mapping(source = "pet.breed", target = "breed")
   @Mapping(source = "pet.description", target = "description")
-  @Mapping(source = "images", target = "imageUrls", qualifiedByName = "convertImagesToUrls")
+  @Mapping(source = "images", target = "imagesLostPet", qualifiedByName = "convertImagesToUrls")
   @Mapping(target = "latitude", ignore = true)
   @Mapping(target = "longitude", ignore = true)
   @Mapping(source = "reporter.contactEmail", target = "contactEmail")
@@ -34,16 +34,16 @@ public interface PetReportMapper {
   // Mapeo de FoundPetReportDTO a PetReportDTO
   @Mapping(target = "reportType", constant = "FOUND")
   @Mapping(target = "reportedBy", source = "reporter.reporterId") // Extrae el ID del reporter
-  @Mapping(target = "title", ignore = true) // No existe en FoundPetReportDTO
+  @Mapping(target = "title", source = "title") // No existe en FoundPetReportDTO
   @Mapping(target = "description", source = "image.description")
   @Mapping(target = "latitude", source = "location.coordinatesDTO.latitude")
   @Mapping(target = "longitude", source = "location.coordinatesDTO.longitude")
   @Mapping(target = "status", source = "metadata.status")
   @Mapping(target = "reportedAt", source = "metadata.createdAt")
   @Mapping(target = "updatedAt", source = "metadata.updatedAt")
-  @Mapping(target = "imageUrls", ignore = true) // Si `image` es un solo objeto con una URL
+  @Mapping(target = "imageFoundPet", source = "image.imageUrl") // Si `image` es un solo objeto con una URL
   @Mapping(target = "breed", ignore = true) // No existe en FoundPetReportDTO
-  @Mapping(target = "contactEmail", ignore = true) // No existe en FoundPetReportDTO
+  @Mapping(target = "contactEmail", source = "reporter.contactEmail") // No existe en FoundPetReportDTO
   @Mapping(target = "petName", ignore = true) // No existe en FoundPetReportDTO
   @Mapping(target = "id", source = "reportId")
   PetReportDTO toPetReportDTO(FoundPetReportDTO foundPetReport);

@@ -34,4 +34,13 @@ public class PetCreateDTO {
 
   @NotBlank(message = "Status cannot be empty")
   private String status;
+
+  @NotBlank(message = "Gender cannot be empty")
+  private String gender;
+
+  @NotBlank(message = "Age cannot be empty")
+  private String age;
+
+  @NotBlank(message = "Weight cannot be empty")
+  private Integer weight;
 }

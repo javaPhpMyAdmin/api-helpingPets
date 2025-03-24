@@ -3,7 +3,7 @@ package com.marcelobatista.dev.helpingPets.src.modules.reports.dto.LostPetReport
 import java.util.List;
 
 public record LostPetReportDTO(Long reportId, String reportType, LostReporterDTO reporter, List<LostImageDTO> images,
-    LostPetDTO pet, LostMetadataDTO metadata) {
+    LostPetDTO pet, LostMetadataDTO metadata, String title) {
 
   // private Long id;
   // private ReportType reportType;

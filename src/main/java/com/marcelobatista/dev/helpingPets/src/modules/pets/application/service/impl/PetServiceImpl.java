@@ -112,7 +112,7 @@ public class PetServiceImpl implements PetService {
   @Override
   @Transactional(readOnly = true)
   public Page<PetDTO> getAllPets(Pageable pageable) {
-    Page<PetEntity> pets = petRepository.findAll(pageable);
+    Page<PetEntity> pets = petRepository.findAllByOrderByCreatedAtDesc(pageable);
     return pets.map(petMapper::toDto);
   }
 

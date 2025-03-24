@@ -23,6 +23,8 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class EmailServiceImpl implements EmailService {
+  private static final String URL = "url";
+  private static final String NAME = "name";
   private static final String UTF_8_ENCODING = "UTF-8";
   private static final String EMAILTEMPLATE = "emailtemplate";
   private static final String PASSWORD_RESTET_REQUEST = "New Reset Password Request";
@@ -41,7 +43,7 @@ public class EmailServiceImpl implements EmailService {
   public void sendNewAccountEmail(String name, String email, String token) {
     try {
       Context context = new Context();
-      context.setVariables(Map.of("name", name, "url",
+      context.setVariables(Map.of(NAME, name, URL,
           emailUtils.getVerificationAccountUrl(host, token)));
       String text = templateEngine.process(EMAILTEMPLATE, context);
       MimeMessage message = getMimeMessage();

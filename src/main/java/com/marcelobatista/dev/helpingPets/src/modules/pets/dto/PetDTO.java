@@ -23,6 +23,10 @@ public class PetDTO {
 
   private String status;
 
+  private String age;
+  private String gender;
+  private Integer weight;
+
   private String createdAt;
   private Long ownerId;
 

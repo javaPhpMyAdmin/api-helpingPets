@@ -24,5 +24,8 @@ public class PetUpdateDTO {
   private String description;
   private List<String> imageUrls;
   private String status; // Puede cambiarse opcionalmente
+  private String gender;
+  private String age;
+  private Integer weight;
 
 }

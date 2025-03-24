@@ -19,7 +19,6 @@ import com.marcelobatista.dev.helpingPets.src.modules.users.domain.User;
 
 @Mapper(componentModel = "spring", builder = @Builder(disableBuilder = true))
 public interface FoundPetReportMapper {
-
   @Mapping(target = "reporter", source = "entity.reporter", qualifiedByName = "convertReporter")
   @Mapping(target = "image.imageUrl", source = "imageUrl")
   @Mapping(target = "image.description", source = "description")
@@ -43,7 +42,7 @@ public interface FoundPetReportMapper {
   // Métodos de ayuda
   @Named("convertReporter")
   default ReporterDTO convertReporter(User reporter) {
-    return new ReporterDTO(reporter.getId());
+    return new ReporterDTO(reporter.getId(), reporter.getEmail());
   }
 
   @Named("convertImage")

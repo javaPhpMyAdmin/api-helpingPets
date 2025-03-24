@@ -85,12 +85,18 @@ public class PetController {
       @RequestParam("description") String description,
       @RequestParam("status") String status,
       @RequestParam("imageUrls") List<MultipartFile> imageUrls,
+      @RequestParam("gender") String gender,
+      @RequestParam("age") String age,
+      @RequestParam("weight") Integer weight,
       HttpServletRequest request) {
 
     PetCreateDTO petCreateDTO = PetCreateDTO.builder()
         .name(petName)
         .breed(breed)
         .description(description)
+        .age(age)
+        .gender(gender)
+        .weight(weight)
         .status(status).imageUrls(imageUrls).build();
 
     return ResponseEntity.ok()

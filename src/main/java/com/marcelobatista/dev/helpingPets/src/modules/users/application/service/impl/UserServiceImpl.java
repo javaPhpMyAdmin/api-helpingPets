@@ -63,7 +63,7 @@ public class UserServiceImpl implements UserService {
   private void sendVerificationEmail(User user) {
     VerificationCode verificationCode = new VerificationCode(user);
     user.setVerificationCode(verificationCode);
-    publisher.publishEvent(new UserEvent(user, EventType.REGISTRATION, Map.of("key", verificationCode.getCode())));
+    publisher.publishEvent(new UserEvent(user, EventType.REGISTRATION, Map.of("token", verificationCode.getCode())));
     verificationCode.setEmailSent(true);
     verificationCodeRepository.save(verificationCode);
   }

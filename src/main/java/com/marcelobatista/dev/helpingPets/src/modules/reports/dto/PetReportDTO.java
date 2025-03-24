@@ -23,7 +23,8 @@ public class PetReportDTO {
   private String title;
   private String breed;
   private String description;
-  private List<String> imageUrls;
+  private List<String> imagesLostPet;
+  private String imageFoundPet;
   private Double latitude;
   private Double longitude;
   private String contactEmail;

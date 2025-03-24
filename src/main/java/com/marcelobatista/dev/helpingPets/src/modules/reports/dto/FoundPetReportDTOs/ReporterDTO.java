@@ -13,4 +13,5 @@ import lombok.Setter;
 @Builder
 public class ReporterDTO {
   private Long reporterId;
+  private String contactEmail;
 }

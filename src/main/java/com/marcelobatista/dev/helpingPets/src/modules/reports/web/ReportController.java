@@ -102,6 +102,7 @@ public class ReportController {
   @PostMapping(value = "/lost-pet", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ResponseEntity<GlobalResponse> createLostPetReport(
       @RequestPart("petName") String petName,
+      @RequestPart("title") String title,
       @RequestPart("breed") String breed,
       @RequestPart("description") String description,
       @RequestPart("contactEmail") String contactEmail,
@@ -113,6 +114,7 @@ public class ReportController {
         .description(description)
         .contactEmail(contactEmail)
         .imageUrls(imageUrls)
+        .title(title)
         .build();
     return ResponseEntity.ok()
         .body(requestUtils.getResponse(request, Map.of("Result", lostPetService.createReport(createLostPetReportDTO)),

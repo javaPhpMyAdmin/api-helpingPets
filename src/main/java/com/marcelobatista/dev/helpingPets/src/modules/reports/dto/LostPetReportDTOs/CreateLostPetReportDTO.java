@@ -22,6 +22,9 @@ public class CreateLostPetReportDTO {
   @NotBlank(message = "Name cannot be empty")
   private String petName;
 
+  @NotBlank(message = "Title cannot be empty")
+  private String title;
+
   @NotBlank(message = "Breed cannot be empty")
   private String breed;
 
