@@ -39,7 +39,6 @@ public interface FoundPetReportMapper {
 
   List<FoundPetReportDTO> toDtoList(List<FoundPetReport> entities);
 
-  // Métodos de ayuda
   @Named("convertReporter")
   default ReporterDTO convertReporter(User reporter) {
     return new ReporterDTO(reporter.getId(), reporter.getEmail());

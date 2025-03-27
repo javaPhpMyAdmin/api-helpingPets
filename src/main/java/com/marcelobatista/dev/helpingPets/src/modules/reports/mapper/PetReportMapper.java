@@ -42,9 +42,9 @@ public interface PetReportMapper {
   @Mapping(target = "reportedAt", source = "metadata.createdAt")
   @Mapping(target = "updatedAt", source = "metadata.updatedAt")
   @Mapping(target = "imageFoundPet", source = "image.imageUrl") // Si `image` es un solo objeto con una URL
-  @Mapping(target = "breed", ignore = true) // No existe en FoundPetReportDTO
+  @Mapping(target = "breed", ignore = true)
   @Mapping(target = "contactEmail", source = "reporter.contactEmail") // No existe en FoundPetReportDTO
-  @Mapping(target = "petName", ignore = true) // No existe en FoundPetReportDTO
+  @Mapping(target = "petName", ignore = true)
   @Mapping(target = "id", source = "reportId")
   PetReportDTO toPetReportDTO(FoundPetReportDTO foundPetReport);
 
