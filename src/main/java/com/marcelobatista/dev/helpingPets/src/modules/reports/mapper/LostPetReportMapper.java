@@ -17,6 +17,7 @@ import com.marcelobatista.dev.helpingPets.src.modules.reports.dto.LostPetReportD
 
 @Mapper(componentModel = "spring", builder = @org.mapstruct.Builder(disableBuilder = true))
 public interface LostPetReportMapper {
+
   @Mapping(target = "reporter", source = "entity", qualifiedByName = "convertReporter")
   @Mapping(target = "images", source = "entity.imageUrls", qualifiedByName = "convertImages")
   @Mapping(target = "pet", source = "entity", qualifiedByName = "convertPet")
@@ -43,7 +44,6 @@ public interface LostPetReportMapper {
   default List<LostImageDTO> convertImages(List<String> imageUrls) {
     return imageUrls.stream().map(LostImageDTO::new).toList();
   }
-
   @Named("convertPet")
   default LostPetDTO convertPet(LostPetReport entity) {
     return new LostPetDTO(entity.getPetName(), entity.getBreed(), entity.getDescription());

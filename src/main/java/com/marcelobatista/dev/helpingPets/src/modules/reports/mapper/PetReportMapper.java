@@ -47,7 +47,6 @@ public interface PetReportMapper {
   @Mapping(target = "petName", ignore = true)
   @Mapping(target = "id", source = "reportId")
   PetReportDTO toPetReportDTO(FoundPetReportDTO foundPetReport);
-
   @Named("convertImagesToUrls")
   default List<String> convertImagesToUrls(List<LostImageDTO> images) {
     return images.stream().map(LostImageDTO::imageUrl).toList();
